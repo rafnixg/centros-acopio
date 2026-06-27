@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}{{ centro.nombre }} — Centros de Acopio Venezuela{% endblock %}
+
+{% block content %}
+<section class="container">
+    <div style="margin-bottom:1rem;">
+        <a href="/" class="btn btn-outline" style="padding:0.5rem 1rem;">← Volver al inicio</a>
+    </div>
+
+    <div class="detalle-centro">
+        <div class="detalle-header">
+            <div>
+                <h1>{{ centro.nombre }}</h1>
+                <p style="color:var(--text-secondary);margin-top:0.3rem;">
+                    Registrado {{ centro.fecha_registro.strftime('%d/%m/%Y') if centro.fecha_registro else '' }}
+                </p>
+            </div>
+            <span class="badge-estado {{ 'badge-activo' if centro.estado_centro == 'Activo' else 'badge-lleno' if centro.estado_centro == 'Lleno' else 'badge-cerrado' if centro.estado_centro == 'Cerrado' else 'badge-pausado' }}" style="position:static;font-size:0.85rem;padding:0.4rem 1rem;">
+                {% if centro.estado_centro == 'Activo' %}🟢{% elif centro.estado_centro == 'Lleno' %}🟡{% elif centro.estado_centro == 'Cerrado' %}🔴{% else %}🔵{% endif %}
+                {{ centro.estado_centro }}
+            </span>
+        </div>
+
+        <div class="detalle-info">
+            <div class="info-item">
+                <div class="label">📍 Estado</div>
+                <div class="value">{{ centro.estado }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">🏙️ Ciudad</div>
+                <div class="value">{{ centro.ciudad }}</div>
+            </div>
+            <div class="info-item" style="grid-column:1/-1;">
+                <div class="label">📌 Dirección</div>
+                <div class="value">{{ centro.direccion }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">📞 Teléfono</div>
+                <div class="value">
+                    <a href="tel:{{ centro.telefono }}" style="color:var(--secondary);text-decoration:none;font-weight:600;">
+                        {{ centro.telefono }}
+                    </a>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="label">👤 Responsable</div>
+                <div class="value">{{ centro.responsable }}</div>
+            </div>
+            {% if centro.horarios %}
+            <div class="info-item">
+                <div class="label">🕐 Horarios</div>
+                <div class="value">{{ centro.horarios }}</div>
+            </div>
+            {% endif %}
+            {% if centro.email %}
+            <div class="info-item">
+                <div class="label">✉️ Correo</div>
+                <div class="value">
+                    <a href="mailto:{{ centro.email }}" style="color:var(--secondary);">{{ centro.email }}</a>
+                </div>
+            </div>
+            {% endif %}
+            {% if centro.redes %}
+            <div class="info-item">
+                <div class="label">🌐 Redes</div>
+                <div class="value">{{ centro.redes }}</div>
+            </div>
+            {% endif %}
+            {% if centro.notas %}
+            <div class="info-item" style="grid-column:1/-1;">
+                <div class="label">📝 Notas</div>
+                <div class="value">{{ centro.notas }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        {% set productos_list = centro.productos | from_json if centro.productos else [] %}
+        {% if productos_list %}
+        <h3 style="margin-top:1.5rem;margin-bottom:0.5rem;">📦 Productos que reciben</h3>
+        <div class="detalle-productos">
+            {% for p in productos_list %}
+            <span class="tag">{{ p }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Mapa -->
+        {% if centro.latitud and centro.longitud %}
+        <h3 style="margin-top:1.5rem;margin-bottom:0.5rem;">🗺️ Ubicación</h3>
+        <div id="mapa" style="height:350px;border-radius:var(--radius);border:1px solid var(--border);"></div>
+        {% endif %}
+
+        <!-- Acciones -->
+        <div style="display:flex;gap:0.75rem;margin-top:2rem;flex-wrap:wrap;">
+            <a href="https://wa.me/?text=🏪%20{{ centro.nombre | urlencode }}%0A📍%20{{ centro.direccion | urlencode }}%0A📞%20{{ centro.telefono | urlencode }}%0A📦%20Centros%20de%20Acopio%20Venezuela%3A%20https://centosacopios.com/centro/{{ centro.id }}"
+               target="_blank"
+               class="btn btn-secondary">
+                📱 Compartir en WhatsApp
+            </a>
+            <a href="tel:{{ centro.telefono }}" class="btn btn-primary">
+                📞 Llamar
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="/static/js/map.js"></script>
+{% if centro.latitud and centro.longitud %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            const centros = [{
+                id: {{ centro.id }},
+                nombre: {{ centro.nombre | tojson }},
+                ciudad: {{ centro.ciudad | tojson }},
+                estado: {{ centro.estado | tojson }},
+                telefono: {{ centro.telefono | tojson }},
+                horarios: {{ centro.horarios | tojson }},
+                estado_centro: {{ centro.estado_centro | tojson }},
+                latitud: {{ centro.latitud }},
+                longitud: {{ centro.longitud }}
+            }];
+            initMapa(centros);
+            // Rename the map div id for the detail view
+            setTimeout(() => {
+                if (mapa) {
+                    mapa.invalidateSize();
+                }
+            }, 300);
+        }, 200);
+    });
+</script>
+{% endif %}
+{% endblock %}

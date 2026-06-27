@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Centro de Acopio — Venezuela{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:800px;">
+    <div style="text-align:center;margin-bottom:1.5rem;">
+        <h1>📦 Registrar Centro de Acopio</h1>
+        <p style="color:var(--text-secondary);">Completa el formulario para añadir un centro al directorio nacional.</p>
+    </div>
+
+    <form class="form-card" id="form-registro" novalidate>
+        <h2>Información del Centro</h2>
+
+        <div class="form-group">
+            <label>Nombre del centro <span class="required">*</span></label>
+            <input type="text" name="nombre" required placeholder="Ej: Centro de Acopio Parroquial San José">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Estado <span class="required">*</span></label>
+                <select name="estado" required>
+                    <option value="">Selecciona un estado...</option>
+                    {% for e in estados %}
+                    <option value="{{ e }}">{{ e }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Ciudad / Municipio <span class="required">*</span></label>
+                <input type="text" name="ciudad" required placeholder="Ej: Caracas, Libertador">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Dirección exacta <span class="required">*</span></label>
+            <textarea name="direccion" required placeholder="Ej: Av. Principal de Los Cortijos, Edificio Maploca, piso 2. Cerca del centro comercial."></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Teléfono(s) de contacto <span class="required">*</span></label>
+                <input type="text" name="telefono" required placeholder="Ej: 0412-1234567">
+            </div>
+            <div class="form-group">
+                <label>Responsable <span class="required">*</span></label>
+                <input type="text" name="responsable" required placeholder="Nombre del responsable">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Horarios de recepción</label>
+                <input type="text" name="horarios" placeholder="Ej: Lun–Vie 9:00–12:00 y 14:00–15:30">
+            </div>
+            <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" name="email" placeholder="correo@ejemplo.com">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Redes sociales</label>
+                <input type="text" name="redes" placeholder="Instagram / WhatsApp / Telegram">
+            </div>
+            <div class="form-group">
+                <label>Estado del centro</label>
+                <select name="estado_centro">
+                    <option value="Activo">🟢 Activo — Recibiendo donaciones</option>
+                    <option value="Lleno">🟡 Lleno — Capacidad completa por ahora</option>
+                    <option value="Pausado">🔵 Pausado — Temporalmente cerrado</option>
+                    <option value="Cerrado">🔴 Cerrado — Ya no recibe donaciones</option>
+                </select>
+            </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0;">
+
+        <h3 style="margin-bottom:1rem;">📦 Productos que reciben</h3>
+        <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:1rem;">Selecciona todos los que apliquen:</p>
+
+        <div class="checkbox-group">
+            <label class="checkbox-item">
+                <input type="checkbox" name="productos" value="Alimentos no perecederos">
+                🥫 Alimentos no perecederos
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="productos" value="Agua potable / embotellada">
+                💧 Agua potable / embotellada
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="productos" value="Artículos de higiene personal">
+                🧻 Artículos de higiene personal
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="productos" value="Botiquín / primeros auxilios">
+                🩹 Botiquín / primeros auxilios
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="productos" value="Productos de limpieza">
+                🧹 Productos de limpieza
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="productos" value="Ropa / frazadas / calzado">
+                👕 Ropa / frazadas / calzado
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="productos" value="Leche / fórmula infantil / pañales">
+                🍼 Leche / fórmula infantil / pañales
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="productos" value="Comida para mascotas">
+                🐾 Comida para mascotas
+            </label>
+        </div>
+
+        <div class="form-group" style="margin-top:0.5rem;">
+            <label>Otros productos</label>
+            <input type="text" id="producto-otros" placeholder="Ej: medicinas, colchones, baterías...">
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0;">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Coordenadas (para el mapa)</label>
+                <input type="number" step="any" name="latitud" placeholder="Latitud (ej: 10.4806)">
+            </div>
+            <div class="form-group">
+                <label>&nbsp;</label>
+                <input type="number" step="any" name="longitud" placeholder="Longitud (ej: -66.9036)">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Notas adicionales</label>
+            <textarea name="notas" placeholder="Cualquier información útil: necesidades urgentes, restricciones, etc."></textarea>
+        </div>
+
+        <div class="form-group" style="display:flex;align-items:center;gap:0.5rem;">
+            <input type="checkbox" name="activo" id="activo-check" checked style="width:18px;height:18px;">
+            <label for="activo-check" style="margin:0;font-weight:500;">Este centro está actualmente recibiendo donaciones</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top:1rem;">
+            💾 Guardar Centro de Acopio
+        </button>
+
+        <p style="text-align:center;margin-top:1rem;font-size:0.8rem;color:var(--text-secondary);">
+            Los campos marcados con <span class="required">*</span> son obligatorios.
+        </p>
+    </form>
+</section>
+{% endblock %}
