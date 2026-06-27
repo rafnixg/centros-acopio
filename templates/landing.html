@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centros de Acopio Venezuela — Emergencia Nacional</title>
+    <meta name="description" content="Directorio nacional de centros de acopio en Venezuela. Encuentra dónde llevar donaciones, haz tu aporte, únete como voluntario. Emergencia activa.">
+    <meta name="theme-color" content="#1d3557">
+
+    <meta property="og:title" content="Centros de Acopio Venezuela — Emergencia Nacional">
+    <meta property="og:description" content="Directorio nacional de centros de acopio. Cada acción cuenta. Cada minuto importa.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_ES">
+
+    <link rel="stylesheet" href="/static/css/landing.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇻🇪</text></svg>">
+</head>
+<body>
+    <!-- ============ NAVBAR ============ -->
+    <nav class="landing-nav" id="navbar">
+        <div class="nav-inner">
+            <a href="/" class="nav-brand">🇻🇪 Emergencia Venezuela</a>
+            <div class="nav-links">
+                <a href="#donar">💛 Donar</a>
+                <a href="/centros">📦 Centros de acopio</a>
+                <a href="#voluntariado">🤝 Voluntariado</a>
+                <a href="#contacto">📞 Contacto</a>
+                <a href="/registrar" class="nav-cta">➕ Registrar centro</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Menú">☰</button>
+        </div>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <header class="landing-hero" id="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <span class="hero-badge">🇻🇪 Emergencia activa · Terremoto en Venezuela</span>
+            <h1>Cada acción cuenta.<br><span class="hero-highlight">Cada minuto importa.</span></h1>
+            <p>Directorio nacional de centros de acopio, donaciones verificadas y voluntariado. Ayuda a las víctimas del terremoto en Venezuela.</p>
+            <div class="hero-actions">
+                <a href="#donar" class="btn-landing btn-primary-landing">💛 Donar ahora</a>
+                <a href="/centros" class="btn-landing btn-secondary-landing">📦 Llevar insumos</a>
+                <a href="#voluntariado" class="btn-landing btn-outline-landing">🤝 Ser voluntario</a>
+            </div>
+            <div class="hero-stats" id="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-num">{{ total }}</span>
+                    <span class="hero-stat-label">Centros registrados</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-num">{{ activos }}</span>
+                    <span class="hero-stat-label">Activos ahora</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-num">24</span>
+                    <span class="hero-stat-label">Estados</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============ 01 · DONACIONES ============ -->
+    <section class="landing-section" id="donar">
+        <div class="section-container">
+            <span class="section-number">01</span>
+            <h2 class="section-title">💛 Donaciones</h2>
+            <p class="section-subtitle">Haz un aporte para apoyar el trabajo de organizaciones locales verificadas.</p>
+
+            <div class="donation-grid">
+                <div class="donation-card">
+                    <div class="donation-org">I Love Venezuela Foundation</div>
+                    <p class="donation-desc">Campaña internacional de ayuda directa para las víctimas del terremoto.</p>
+                    <div class="donation-tag">USD · GoFundMe</div>
+                    <a href="https://www.gofundme.com/f/emergency-relief-for-venezuela-earthquake-victims" target="_blank" rel="noopener" class="btn-landing btn-primary-landing" style="font-size:0.9rem;padding:0.7rem 1.2rem;">
+                        🌐 Donar en GoFundMe
+                    </a>
+                </div>
+                <div class="donation-card">
+                    <div class="donation-org">Aid For Life International</div>
+                    <p class="donation-desc">Respuesta de emergencia ante el terremoto en Venezuela: ayuda humanitaria y suministros para las comunidades afectadas.</p>
+                    <div class="donation-tag">Cuentas bancarias</div>
+                    <a href="https://aidforlifeintl.org/venezuela-earthquake-emergency-response-2026/" target="_blank" rel="noopener" class="btn-landing btn-primary-landing" style="font-size:0.9rem;padding:0.7rem 1.2rem;">
+                        🌐 Donar en Aid For Life
+                    </a>
+                </div>
+                <div class="donation-card">
+                    <div class="donation-org">Dividendo Voluntario para la Comunidad</div>
+                    <p class="donation-desc">United Way Venezuela — más de 60 años canalizando ayuda en el país.</p>
+                    <div class="donation-tag">Pago móvil · Cuentas bancarias</div>
+                    <details class="donation-details">
+                        <summary>Ver cuentas bancarias</summary>
+                        <div class="donation-accounts">
+                            <p><strong>Pago Móvil — Banco Mercantil</strong><br>J-000579105 · (0412) 332-1367</p>
+                            <p><strong>Banco Mercantil · Cta. Corriente</strong><br>0105-0026-5410-2642-4518<br>RIF J-000579105</p>
+                            <p><strong>Banco Nacional de Crédito (BNC)</strong><br>0191-0154-1321-0019-6480<br>RIF J-000579105</p>
+                            <p><strong>Cuenta en divisas · Mercantil Panamá</strong><br>N° 300016658 · SWIFT: MPANPAPA</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 02 · CENTROS DE ACOPIO ============ -->
+    <section class="landing-section landing-section-alt" id="acopio">
+        <div class="section-container">
+            <span class="section-number">02</span>
+            <h2 class="section-title">📦 Centros de acopio</h2>
+            <p class="section-subtitle">Lleva insumos a un punto cercano. Los centros están coordinados por Cáritas de Venezuela y aliados logísticos.</p>
+
+            <!-- Centros destacados del backend -->
+            <div class="featured-centros" id="featured-centros">
+                {% if centros_recientes %}
+                    {% for c in centros_recientes %}
+                    <a href="/centro/{{ c.id }}" class="featured-card">
+                        <span class="featured-badge {{ 'badge-activo' if c.estado_centro == 'Activo' else 'badge-lleno' if c.estado_centro == 'Lleno' else 'badge-cerrado' if c.estado_centro == 'Cerrado' else 'badge-pausado' }}">
+                            {{ c.estado_centro }}
+                        </span>
+                        <h4>{{ c.nombre }}</h4>
+                        <p class="featured-meta">📍 {{ c.ciudad }}, {{ c.estado }}</p>
+                        {% set prods = c.productos | from_json if c.productos else [] %}
+                        {% if prods %}
+                        <div class="featured-tags">
+                            {% for p in prods[:3] %}
+                            <span>{{ p }}</span>
+                            {% endfor %}
+                            {% if prods|length > 3 %}
+                            <span>+{{ prods|length - 3 }}</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        <span class="featured-link">Ver detalle →</span>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state" style="box-shadow:none;background:transparent;">
+                        <div class="emoji">🏪</div>
+                        <p>Aún no hay centros registrados. ¡Sé el primero!</p>
+                        <a href="/registrar" class="btn-landing btn-primary-landing" style="margin-top:1rem;">➕ Registrar centro</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="text-align:center;margin-top:2rem;">
+                <a href="/centros" class="btn-landing btn-primary-landing btn-lg-landing">📋 Ver todos los centros</a>
+                <a href="/registrar" class="btn-landing btn-outline-landing btn-lg-landing" style="margin-left:0.75rem;">➕ Registrar nuevo</a>
+            </div>
+
+            <div class="info-box" style="margin-top:2rem;">
+                <strong>📌 ¿Qué llevar?</strong>
+                <p>Alimentos no perecederos, agua potable, artículos de higiene personal, botiquín de primeros auxilios, productos de limpieza, ropa y frazadas, leche y fórmula infantil, pañales, comida para mascotas. Verifica con cada centro qué necesitan antes de ir.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 03 · VOLUNTARIADO ============ -->
+    <section class="landing-section" id="voluntariado">
+        <div class="section-container">
+            <span class="section-number">03</span>
+            <h2 class="section-title">🤝 Voluntariado</h2>
+            <p class="section-subtitle">Únete al esfuerzo. Tu tiempo y tus habilidades pueden marcar la diferencia.</p>
+
+            <div class="volunteer-grid">
+                <div class="volunteer-card">
+                    <div class="volunteer-icon">🆘</div>
+                    <h4>Cruz Roja Venezolana</h4>
+                    <p>Regístrate en el registro oficial de voluntarios para apoyar las labores de respuesta humanitaria en terreno.</p>
+                    <a href="https://ee.ifrc.org/x/Iaw9NksQ" target="_blank" rel="noopener" class="btn-landing btn-primary-landing" style="font-size:0.9rem;">
+                        📝 Formulario de registro
+                    </a>
+                </div>
+                <div class="volunteer-card">
+                    <div class="volunteer-icon">📦</div>
+                    <h4>Centros de acopio</h4>
+                    <p>Los centros de acopio necesitan personas que ayuden a clasificar, empacar y distribuir las donaciones.</p>
+                    <a href="/centros" class="btn-landing btn-secondary-landing" style="font-size:0.9rem;">
+                        📋 Encontrar un centro
+                    </a>
+                </div>
+                <div class="volunteer-card">
+                    <div class="volunteer-icon">🌐</div>
+                    <h4>Voluntariado digital</h4>
+                    <p>Comparte este directorio en tus redes. Ayuda a difundir los centros de acopio activos. Cada persona informada es una ayuda que llega.</p>
+                    <a href="/centros" class="btn-landing btn-outline-landing" style="font-size:0.9rem;">
+                        🔗 Compartir directorio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 04 · EMERGENCIA Y CONTACTO ============ -->
+    <section class="landing-section landing-section-alt" id="contacto">
+        <div class="section-container">
+            <span class="section-number">04</span>
+            <h2 class="section-title">📞 Emergencia y Contacto</h2>
+            <p class="section-subtitle">Números de emergencia y servicios activos para la población.</p>
+
+            <div class="emergency-grid">
+                <div class="emergency-card emergency-phone">
+                    <div class="emergency-icon">📞</div>
+                    <h4>Teléfonos de emergencia</h4>
+                    <div class="emergency-numbers">
+                        <a href="tel:911">🚑 911 · Emergencias</a>
+                        <a href="tel:02129932541">🚁 Aeroambulancias · (0212) 993.25.41</a>
+                        <a href="tel:02129936911">🆘 Rescarven · (0212) 993.69.11</a>
+                        <a href="tel:02125454545">🚑 Amb. Metropolitano · (0212) 545.45.45</a>
+                    </div>
+                </div>
+                <div class="emergency-card">
+                    <div class="emergency-icon">🔍</div>
+                    <h4>Personas desaparecidas</h4>
+                    <p>Reporta o busca personas desaparecidas en la plataforma ciudadana.</p>
+                    <a href="https://desaparecidosterremotovenezuela.com/" target="_blank" rel="noopener" class="btn-landing btn-secondary-landing" style="font-size:0.9rem;">
+                        🌐 Ir al sitio
+                    </a>
+                </div>
+                <div class="emergency-card">
+                    <div class="emergency-icon">💬</div>
+                    <h4>Reportes y difusión</h4>
+                    <p>Reporta personas en situación de riesgo o desaparecidas. Comparte fotos y videos a través de WhatsApp.</p>
+                    <a href="https://wa.me/584143109169" target="_blank" rel="noopener" class="btn-landing btn-secondary-landing" style="font-size:0.9rem;">
+                        📱 WhatsApp +58 414 310 9169
+                    </a>
+                </div>
+                <div class="emergency-card">
+                    <div class="emergency-icon">📋</div>
+                    <h4>Información de centros</h4>
+                    <p>Si conoces un centro de acopio no registrado, repórtalo para que aparezca en el directorio.</p>
+                    <a href="/registrar" class="btn-landing btn-primary-landing" style="font-size:0.9rem;">
+                        ➕ Registrar centro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ CTA FINAL ============ -->
+    <section class="landing-cta">
+        <div class="section-container" style="text-align:center;">
+            <h2 style="font-size:2rem;margin-bottom:0.75rem;">🇻🇪 Cada acción cuenta</h2>
+            <p style="font-size:1.1rem;opacity:0.9;margin-bottom:1.5rem;max-width:600px;margin-left:auto;margin-right:auto;">
+                Comparte este sitio para llegar a más personas que necesitan ayuda.
+            </p>
+            <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                <a href="https://wa.me/?text=🇻🇪%20Centros%20de%20Acopio%20Venezuela%20-%20Directorio%20nacional%20de%20centros%20de%20acopio%20para%20la%20emergencia.%20Encuentra%20dónde%20llevar%20donaciones%20en%20https://centosacopios.com" target="_blank" class="btn-landing btn-outline-landing">📱 Compartir en WhatsApp</a>
+                <a href="https://twitter.com/intent/tweet?text=🇻🇪%20Centros%20de%20Acopio%20Venezuela%20-%20Directorio%20nacional%20de%20centros%20de%20acopio%20para%20la%20emergencia.%20Encuentra%20dónde%20llevar%20donaciones%20https://centosacopios.com" target="_blank" class="btn-landing btn-outline-landing">𝕏 Compartir en Twitter</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <strong>🇻🇪 Centros de Acopio Venezuela</strong>
+                <p>Directorio comunitario de ayuda · Información verificada</p>
+            </div>
+            <div class="footer-links">
+                <a href="/">Inicio</a>
+                <a href="/centros">Directorio</a>
+                <a href="/registrar">Registrar centro</a>
+                <a href="/estadisticas">Estadísticas</a>
+            </div>
+            <div class="footer-credits">
+                <p>Inspirado en <a href="https://ayudavenezuela.venevision.com/" target="_blank">Venevisión</a> y <a href="https://desaparecidosterremotovenezuela.com/" target="_blank">Desaparecidos Terremoto Venezuela</a></p>
+                <p style="margin-top:0.3rem;font-size:0.8rem;opacity:0.6;">Hecho por venezolanos 🇻🇪 — Código abierto</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile nav toggle
+        document.getElementById("navToggle").addEventListener("click", () => {
+            document.querySelector(".nav-links").classList.toggle("open");
+        });
+
+        // Navbar background on scroll
+        window.addEventListener("scroll", () => {
+            const nav = document.getElementById("navbar");
+            if (window.scrollY > 60) {
+                nav.classList.add("scrolled");
+            } else {
+                nav.classList.remove("scrolled");
+            }
+        });
+
+        // Smooth reveal animation on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll(".donation-card, .volunteer-card, .emergency-card, .featured-card, .section-number, .section-title").forEach(el => {
+            el.classList.add("reveal");
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

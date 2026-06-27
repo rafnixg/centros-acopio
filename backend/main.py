@@ -86,9 +86,33 @@ PRODUCTOS_DISPONIBLES = [
 # RUTAS DE TEMPLATES (HTML)
 # ---------------------------------------------------------------------------
 @app.get("/")
-def index(request: Request):
+def landing(request: Request, db: Session = Depends(get_db)):
+    """Landing page informativa estilo ayudavenezuela.venevision.com"""
+    total = db.query(func.count(CentroAcopio.id)).scalar()
+    activos = db.query(CentroAcopio).filter(CentroAcopio.estado_centro == "Activo").count()
+    centros_recientes = (
+        db.query(CentroAcopio)
+        .order_by(CentroAcopio.fecha_registro.desc())
+        .limit(3)
+        .all()
+    )
     return templates.TemplateResponse(
-        "index.html",
+        "landing.html",
+        {
+            "request": request,
+            "total": total,
+            "activos": activos,
+            "centros_recientes": centros_recientes,
+            "estados": ESTADOS_VENEZUELA,
+        },
+    )
+
+
+@app.get("/centros")
+def centros_directory(request: Request):
+    """Directorio completo de centros de acopio (antes index)"""
+    return templates.TemplateResponse(
+        "centros.html",
         {"request": request, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
     )
 
