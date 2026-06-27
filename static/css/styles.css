@@ -622,6 +622,11 @@ body {
     }
 }
 
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
 .card-centro {
     animation: fadeInUp 0.4s ease both;
 }
@@ -632,6 +637,22 @@ body {
 .card-centro:nth-child(4) { animation-delay: 0.2s; }
 .card-centro:nth-child(5) { animation-delay: 0.25s; }
 .card-centro:nth-child(6) { animation-delay: 0.3s; }
+
+/* Skeleton loading */
+.skeleton {
+    background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-card {
+    background: var(--bg-card) !important;
+}
+
+.skeleton-badge {
+    float: right;
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {

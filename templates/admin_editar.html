@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar {{ centro.nombre }} — Admin</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✏️</text></svg>">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="/admin" class="navbar-brand">
+                <span class="emoji">🔐</span>
+                <span>Admin</span>
+            </a>
+            <div class="navbar-links">
+                <a href="/">🏠 Sitio público</a>
+                <a href="/admin">📋 Panel</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="max-width:800px;">
+        <div style="margin-bottom:1rem;">
+            <a href="/admin" class="btn btn-outline" style="padding:0.5rem 1rem;">← Volver al panel</a>
+        </div>
+
+        <form class="form-card" id="form-editar">
+            <h2>✏️ Editar: {{ centro.nombre }}</h2>
+
+            <div class="form-group">
+                <label>Nombre del centro <span class="required">*</span></label>
+                <input type="text" name="nombre" value="{{ centro.nombre }}" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Estado <span class="required">*</span></label>
+                    <select name="estado" required>
+                        {% for e in estados %}
+                        <option value="{{ e }}" {% if e == centro.estado %}selected{% endif %}>{{ e }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ciudad <span class="required">*</span></label>
+                    <input type="text" name="ciudad" value="{{ centro.ciudad }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Dirección <span class="required">*</span></label>
+                <textarea name="direccion" required>{{ centro.direccion }}</textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Teléfono <span class="required">*</span></label>
+                    <input type="text" name="telefono" value="{{ centro.telefono }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Responsable <span class="required">*</span></label>
+                    <input type="text" name="responsable" value="{{ centro.responsable }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Horarios</label>
+                    <input type="text" name="horarios" value="{{ centro.horarios or '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Estado del centro</label>
+                    <select name="estado_centro">
+                        <option value="Activo" {% if centro.estado_centro == 'Activo' %}selected{% endif %}>🟢 Activo</option>
+                        <option value="Lleno" {% if centro.estado_centro == 'Lleno' %}selected{% endif %}>🟡 Lleno</option>
+                        <option value="Pausado" {% if centro.estado_centro == 'Pausado' %}selected{% endif %}>🔵 Pausado</option>
+                        <option value="Cerrado" {% if centro.estado_centro == 'Cerrado' %}selected{% endif %}>🔴 Cerrado</option>
+                    </select>
+                </div>
+            </div>
+
+            {% set productos_centro = centro.productos | from_json if centro.productos else [] %}
+            <h3 style="margin:1.5rem 0 0.75rem;">📦 Productos</h3>
+            <div class="checkbox-group">
+                {% for p in productos %}
+                <label class="checkbox-item">
+                    <input type="checkbox" name="productos" value="{{ p }}" {% if p in productos_centro %}checked{% endif %}>
+                    {{ p }}
+                </label>
+                {% endfor %}
+            </div>
+
+            <div class="form-group" style="margin-top:1rem;">
+                <label>Notas</label>
+                <textarea name="notas">{{ centro.notas or '' }}</textarea>
+            </div>
+
+            <div class="form-row" style="margin-top:1rem;">
+                <div class="form-group">
+                    <label>Latitud</label>
+                    <input type="number" step="any" name="latitud" value="{{ centro.latitud or '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Longitud</label>
+                    <input type="number" step="any" name="longitud" value="{{ centro.longitud or '' }}">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top:1rem;">
+                💾 Guardar Cambios
+            </button>
+        </form>
+    </main>
+
+    <footer class="footer">
+        <p>🔐 Panel de Administración — Centros de Acopio Venezuela</p>
+    </footer>
+
+    <script>
+        document.getElementById("form-editar").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector("button[type='submit']");
+            btn.disabled = true;
+            btn.innerHTML = "⏳ Guardando...";
+
+            const productos = [...form.querySelectorAll("input[name='productos']:checked")].map(cb => cb.value);
+
+            const data = {
+                nombre: form.nombre.value.trim(),
+                estado: form.estado.value,
+                ciudad: form.ciudad.value.trim(),
+                direccion: form.direccion.value.trim(),
+                telefono: form.telefono.value.trim(),
+                responsable: form.responsable.value.trim(),
+                horarios: form.horarios.value.trim(),
+                estado_centro: form.estado_centro.value,
+                productos: JSON.stringify(productos),
+                notas: form.notas.value.trim(),
+                latitud: form.latitud.value ? parseFloat(form.latitud.value) : null,
+                longitud: form.longitud.value ? parseFloat(form.longitud.value) : null,
+            };
+
+            try {
+                const res = await fetch(`/api/centros/{{ centro.id }}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+                if (!res.ok) throw new Error("Error al guardar");
+                alert("✅ Centro actualizado con éxito");
+                window.location.href = "/admin";
+            } catch (err) {
+                alert("❌ " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "💾 Guardar Cambios";
+            }
+        });
+    </script>
+</body>
+</html>

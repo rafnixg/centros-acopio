@@ -14,6 +14,7 @@
                 <h1>{{ centro.nombre }}</h1>
                 <p style="color:var(--text-secondary);margin-top:0.3rem;">
                     Registrado {{ centro.fecha_registro.strftime('%d/%m/%Y') if centro.fecha_registro else '' }}
+                    · Última actualización: {{ centro.ultima_actualizacion.strftime('%d/%m/%Y %H:%M') if centro.ultima_actualizacion else '' }}
                 </p>
             </div>
             <span class="badge-estado {{ 'badge-activo' if centro.estado_centro == 'Activo' else 'badge-lleno' if centro.estado_centro == 'Lleno' else 'badge-cerrado' if centro.estado_centro == 'Cerrado' else 'badge-pausado' }}" style="position:static;font-size:0.85rem;padding:0.4rem 1rem;">
@@ -91,18 +92,86 @@
         <div id="mapa" style="height:350px;border-radius:var(--radius);border:1px solid var(--border);"></div>
         {% endif %}
 
-        <!-- Acciones -->
+        <!-- Acciones compartir -->
         <div style="display:flex;gap:0.75rem;margin-top:2rem;flex-wrap:wrap;">
             <a href="https://wa.me/?text=🏪%20{{ centro.nombre | urlencode }}%0A📍%20{{ centro.direccion | urlencode }}%0A📞%20{{ centro.telefono | urlencode }}%0A📦%20Centros%20de%20Acopio%20Venezuela%3A%20https://centosacopios.com/centro/{{ centro.id }}"
                target="_blank"
                class="btn btn-secondary">
-                📱 Compartir en WhatsApp
+                📱 WhatsApp
+            </a>
+            <a href="https://t.me/share/url?url=https://centosacopios.com/centro/{{ centro.id }}&text=🏪%20{{ centro.nombre | urlencode }}%20-%20{{ centro.ciudad | urlencode }}"
+               target="_blank"
+               class="btn btn-secondary">
+                ✈️ Telegram
+            </a>
+            <a href="https://twitter.com/intent/tweet?text=🏪%20{{ centro.nombre | urlencode }}%20en%20{{ centro.ciudad | urlencode }}%2C%20{{ centro.estado | urlencode }}%0A📍%20{{ centro.direccion | urlencode }}%0A📞%20{{ centro.telefono | urlencode }}%0A📦%20Centros%20de%20Acopio%20Venezuela&url=https://centosacopios.com/centro/{{ centro.id }}"
+               target="_blank"
+               class="btn btn-secondary">
+                𝕏 Twitter
             </a>
             <a href="tel:{{ centro.telefono }}" class="btn btn-primary">
                 📞 Llamar
             </a>
         </div>
     </div>
+
+    <!-- Sección: Reportar actualización -->
+    <div class="detalle-centro" style="margin-top:1.5rem;">
+        <h3 style="margin-bottom:0.75rem;">📢 Reportar actualización de este centro</h3>
+        <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:1rem;">
+            ¿Sabes algo sobre este centro? Reporta si está lleno, cerrado, o si hay algún cambio.
+        </p>
+        <form id="form-reporte" onsubmit="enviarReporte(event, {{ centro.id }})">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tu nombre (opcional)</label>
+                    <input type="text" id="reporte-nombre" placeholder="Ej: Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Estado actual del centro</label>
+                    <select id="reporte-estado">
+                        <option value="">Sin cambios</option>
+                        <option value="Activo">🟢 Activo — Recibiendo donaciones</option>
+                        <option value="Lleno">🟡 Lleno — Capacidad completa</option>
+                        <option value="Pausado">🔵 Pausado — Temporalmente cerrado</option>
+                        <option value="Cerrado">🔴 Cerrado — Ya no recibe</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Mensaje / detalles</label>
+                <textarea id="reporte-mensaje" placeholder="Ej: Ya no están recibiendo ropa, solo alimentos. Están verificando donaciones." rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">📤 Enviar reporte</button>
+        </form>
+    </div>
+
+    <!-- Historial de reportes -->
+    {% if reportes %}
+    <div class="detalle-centro" style="margin-top:1.5rem;">
+        <h3 style="margin-bottom:0.75rem;">📋 Últimas actualizaciones reportadas</h3>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            {% for r in reportes %}
+            <div style="padding:0.75rem;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--secondary);">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <strong>{{ r.nombre_reportador }}</strong>
+                    <span style="font-size:0.75rem;color:var(--text-secondary);">
+                        {{ r.fecha.strftime('%d/%m/%Y %H:%M') if r.fecha else '' }}
+                    </span>
+                </div>
+                {% if r.nuevo_estado %}
+                <span class="badge-estado {{ 'badge-activo' if r.nuevo_estado == 'Activo' else 'badge-lleno' if r.nuevo_estado == 'Lleno' else 'badge-cerrado' if r.nuevo_estado == 'Cerrado' else 'badge-pausado' }}" style="position:static;display:inline-block;margin-top:0.3rem;font-size:0.75rem;">
+                    {{ r.nuevo_estado }}
+                </span>
+                {% endif %}
+                {% if r.mensaje %}
+                <p style="margin-top:0.3rem;font-size:0.9rem;">{{ r.mensaje }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </section>
 {% endblock %}
 
@@ -124,14 +193,39 @@
                 longitud: {{ centro.longitud }}
             }];
             initMapa(centros);
-            // Rename the map div id for the detail view
-            setTimeout(() => {
-                if (mapa) {
-                    mapa.invalidateSize();
-                }
-            }, 300);
+            setTimeout(() => { if (mapa) mapa.invalidateSize(); }, 300);
         }, 200);
     });
 </script>
 {% endif %}
+<script>
+    async function enviarReporte(e, centroId) {
+        e.preventDefault();
+        const btn = e.target.querySelector("button[type='submit']");
+        btn.disabled = true;
+        btn.innerHTML = "⏳ Enviando...";
+
+        try {
+            const res = await fetch("/api/reportes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    centro_id: centroId,
+                    nombre_reportador: document.getElementById("reporte-nombre").value.trim() || "Anónimo",
+                    mensaje: document.getElementById("reporte-mensaje").value.trim(),
+                    nuevo_estado: document.getElementById("reporte-estado").value,
+                }),
+            });
+            if (!res.ok) throw new Error("Error al enviar reporte");
+            mostrarToast("✅ Reporte enviado. ¡Gracias por ayudar!", "success");
+            e.target.reset();
+            setTimeout(() => location.reload(), 1500);
+        } catch (err) {
+            mostrarToast("❌ " + err.message, "error");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = "📤 Enviar reporte";
+        }
+    }
+</script>
 {% endblock %}

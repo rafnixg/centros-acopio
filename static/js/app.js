@@ -36,6 +36,57 @@ function emojiEstado(estado) {
     return m[estado] || "⚪";
 }
 
+// ---------- Skeleton Loading ----------
+function mostrarSkeleton() {
+    const grid = document.getElementById("grid-centros");
+    if (!grid) return;
+    grid.innerHTML = Array(6).fill(`
+        <div class="card-centro skeleton-card" style="pointer-events:none;animation:none;">
+            <div class="skeleton skeleton-badge" style="width:70px;height:22px;border-radius:20px;float:right;"></div>
+            <div class="skeleton" style="width:70%;height:20px;margin-bottom:12px;"></div>
+            <div class="skeleton" style="width:50%;height:14px;margin-bottom:6px;"></div>
+            <div class="skeleton" style="width:40%;height:14px;margin-bottom:6px;"></div>
+            <div class="skeleton" style="width:30%;height:14px;margin-bottom:12px;"></div>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+                <div class="skeleton" style="width:60px;height:20px;border-radius:12px;"></div>
+                <div class="skeleton" style="width:50px;height:20px;border-radius:12px;"></div>
+            </div>
+        </div>
+    `).join("");
+}
+
+// ---------- Sincronizar filtros con URL ----------
+function syncFiltersToURL() {
+    const params = new URLSearchParams();
+    const q = document.getElementById("filtro-q")?.value?.trim();
+    const estado = document.getElementById("filtro-estado")?.value;
+    const producto = document.getElementById("filtro-producto")?.value;
+    const estadoCentro = document.getElementById("filtro-estado-centro")?.value;
+
+    if (q) params.set("q", q);
+    if (estado) params.set("estado", estado);
+    if (producto) params.set("producto", producto);
+    if (estadoCentro) params.set("estado_centro", estadoCentro);
+
+    const newUrl = params.toString()
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
+    window.history.replaceState({}, "", newUrl);
+}
+
+function syncFiltersFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const qEl = document.getElementById("filtro-q");
+    const estadoEl = document.getElementById("filtro-estado");
+    const productoEl = document.getElementById("filtro-producto");
+    const estadoCentroEl = document.getElementById("filtro-estado-centro");
+
+    if (qEl && params.has("q")) qEl.value = params.get("q");
+    if (estadoEl && params.has("estado")) estadoEl.value = params.get("estado");
+    if (productoEl && params.has("producto")) productoEl.value = params.get("producto");
+    if (estadoCentroEl && params.has("estado_centro")) estadoCentroEl.value = params.get("estado_centro");
+}
+
 // ---------- Renderizar tarjetas ----------
 function renderCentros(centros) {
     const grid = document.getElementById("grid-centros");
@@ -69,8 +120,7 @@ function renderCentros(centros) {
 
 // ---------- Cargar centros desde API ----------
 async function cargarCentros() {
-    const grid = document.getElementById("grid-centros");
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;"><div class="spinner"></div></div>`;
+    mostrarSkeleton();
 
     const params = new URLSearchParams();
     const q = document.getElementById("filtro-q")?.value?.trim();
@@ -83,6 +133,8 @@ async function cargarCentros() {
     if (producto) params.set("producto", producto);
     if (estadoCentro) params.set("estado_centro", estadoCentro);
 
+    syncFiltersToURL();
+
     try {
         const res = await fetch(`${API}?${params.toString()}`);
         if (!res.ok) throw new Error("Error al cargar");
@@ -91,6 +143,7 @@ async function cargarCentros() {
         cargarEstadisticas();
     } catch (e) {
         console.error(e);
+        const grid = document.getElementById("grid-centros");
         grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
             <div class="emoji">⚠️</div>
             <p>Error al cargar los centros. Intenta de nuevo.</p>
@@ -103,9 +156,12 @@ async function cargarEstadisticas() {
     try {
         const res = await fetch("/api/estadisticas");
         const stats = await res.json();
-        document.getElementById("stat-total").textContent = stats.total;
-        document.getElementById("stat-activos").textContent = stats.por_estado_centro?.Activo || 0;
-        document.getElementById("stat-llenos").textContent = stats.por_estado_centro?.Lleno || 0;
+        const elTotal = document.getElementById("stat-total");
+        const elActivos = document.getElementById("stat-activos");
+        const elLlenos = document.getElementById("stat-llenos");
+        if (elTotal) elTotal.textContent = stats.total;
+        if (elActivos) elActivos.textContent = stats.por_estado_centro?.Activo || 0;
+        if (elLlenos) elLlenos.textContent = stats.por_estado_centro?.Lleno || 0;
     } catch (e) { /* silencioso */ }
 }
 
@@ -121,6 +177,9 @@ async function enviarRegistro(e) {
     const otros = document.getElementById("producto-otros")?.value?.trim();
     if (otros) productos.push(`Otros: ${otros}`);
 
+    const latitud = form.latitud?.value ? parseFloat(form.latitud.value) : null;
+    const longitud = form.longitud?.value ? parseFloat(form.longitud.value) : null;
+
     const data = {
         nombre: form.nombre.value.trim(),
         estado: form.estado.value,
@@ -135,6 +194,8 @@ async function enviarRegistro(e) {
         email: form.email?.value?.trim() || "",
         redes: form.redes?.value?.trim() || "",
         notas: form.notas?.value?.trim() || "",
+        latitud: latitud,
+        longitud: longitud,
     };
 
     try {
@@ -162,6 +223,47 @@ async function enviarRegistro(e) {
     }
 }
 
+// ---------- Geocodificación automática ----------
+let geocodingTimer = null;
+
+function initGeocoding() {
+    const dirInput = document.getElementById("direccion");
+    const ciudadInput = document.getElementById("ciudad");
+    const estadoSelect = document.getElementById("estado");
+    const latInput = document.querySelector("input[name='latitud']");
+    const lngInput = document.querySelector("input[name='longitud']");
+
+    if (!dirInput || !latInput) return;
+
+    async function autoGeocode() {
+        const dir = dirInput.value.trim();
+        const ciudad = ciudadInput?.value?.trim();
+        const estado = estadoSelect?.value;
+
+        if (!dir && !ciudad) return;
+
+        clearTimeout(geocodingTimer);
+        geocodingTimer = setTimeout(async () => {
+            try {
+                const res = await fetch("/api/geocodificar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ direccion: dir, ciudad, estado }),
+                });
+                const data = await res.json();
+                if (data.latitud && data.longitud) {
+                    latInput.value = data.latitud.toFixed(4);
+                    lngInput.value = data.longitud.toFixed(4);
+                }
+            } catch (e) { /* silencioso */ }
+        }, 800);
+    }
+
+    dirInput.addEventListener("input", autoGeocode);
+    if (ciudadInput) ciudadInput.addEventListener("input", autoGeocode);
+    if (estadoSelect) estadoSelect.addEventListener("change", autoGeocode);
+}
+
 // ---------- Navegación ----------
 function irADetalle(id) {
     window.location.href = `/centro/${id}`;
@@ -184,6 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Página principal
     const grid = document.getElementById("grid-centros");
     if (grid) {
+        syncFiltersFromURL();
         cargarCentros();
 
         // Filtros con debounce
@@ -205,5 +308,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const formRegistro = document.getElementById("form-registro");
     if (formRegistro) {
         formRegistro.addEventListener("submit", enviarRegistro);
+        initGeocoding();
     }
 });

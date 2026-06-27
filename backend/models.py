@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, Text
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, Text, ForeignKey
 from database import Base
 
 
@@ -29,3 +29,14 @@ class CentroAcopio(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+
+
+class ReporteActualizacion(Base):
+    __tablename__ = "reportes_actualizacion"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    centro_id = Column(Integer, ForeignKey("centros_acopio.id"), nullable=False, index=True)
+    nombre_reportador = Column(String(100), default="Anónimo")
+    mensaje = Column(Text, nullable=True)
+    nuevo_estado = Column(String(20), nullable=True)
+    fecha = Column(DateTime, default=lambda: datetime.now(timezone.utc))

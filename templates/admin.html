@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin — Centros de Acopio Venezuela</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔐</text></svg>">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="/admin" class="navbar-brand">
+                <span class="emoji">🔐</span>
+                <span>Panel Admin</span>
+            </a>
+            <div class="navbar-links">
+                <a href="/">🏠 Sitio público</a>
+                <a href="/admin/logout" style="color:#ff6b6b;">🚪 Salir</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>🔐 Panel de Administración</h1>
+        <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Gestiona los centros de acopio y revisa los reportes de actualización.</p>
+
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
+            <div class="stat-card" style="flex:1;min-width:120px;">
+                <span class="number">{{ centros | length }}</span>
+                <span class="label">Total Centros</span>
+            </div>
+            <div class="stat-card" style="flex:1;min-width:120px;">
+                <span class="number">{{ reportes | length }}</span>
+                <span class="label">Reportes recientes</span>
+            </div>
+        </div>
+
+        <!-- Tabla de centros -->
+        <h2 style="margin-bottom:1rem;">📋 Centros Registrados</h2>
+        <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;background:var(--bg-card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);">
+                <thead>
+                    <tr style="background:var(--bg-nav);color:var(--text-nav);">
+                        <th style="padding:0.75rem;text-align:left;">ID</th>
+                        <th style="padding:0.75rem;text-align:left;">Nombre</th>
+                        <th style="padding:0.75rem;text-align:left;">Estado</th>
+                        <th style="padding:0.75rem;text-align:left;">Ciudad</th>
+                        <th style="padding:0.75rem;text-align:left;">Estado Centro</th>
+                        <th style="padding:0.75rem;text-align:left;">Fecha</th>
+                        <th style="padding:0.75rem;text-align:center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in centros %}
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:0.6rem 0.75rem;">{{ c.id }}</td>
+                        <td style="padding:0.6rem 0.75rem;font-weight:600;">{{ c.nombre }}</td>
+                        <td style="padding:0.6rem 0.75rem;">{{ c.estado }}</td>
+                        <td style="padding:0.6rem 0.75rem;">{{ c.ciudad }}</td>
+                        <td style="padding:0.6rem 0.75rem;">
+                            <span class="badge-estado {{ 'badge-activo' if c.estado_centro == 'Activo' else 'badge-lleno' if c.estado_centro == 'Lleno' else 'badge-cerrado' if c.estado_centro == 'Cerrado' else 'badge-pausado' }}" style="position:static;font-size:0.7rem;">
+                                {{ c.estado_centro }}
+                            </span>
+                        </td>
+                        <td style="padding:0.6rem 0.75rem;font-size:0.8rem;">{{ c.fecha_registro.strftime('%d/%m/%Y') }}</td>
+                        <td style="padding:0.6rem 0.75rem;text-align:center;">
+                            <a href="/admin/editar/{{ c.id }}" class="btn btn-secondary" style="padding:0.4rem 0.8rem;font-size:0.8rem;">✏️ Editar</a>
+                            <button onclick="eliminarCentro({{ c.id }})" class="btn btn-primary" style="padding:0.4rem 0.8rem;font-size:0.8rem;background:var(--danger);">🗑️ Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if centros|length == 0 %}
+        <div class="empty-state">
+            <div class="emoji">🏪</div>
+            <p>No hay centros registrados aún.</p>
+        </div>
+        {% endif %}
+
+        <!-- Reportes recientes -->
+        {% if reportes %}
+        <h2 style="margin-top:2rem;margin-bottom:1rem;">📢 Reportes de Actualización</h2>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            {% for r in reportes %}
+            <div style="padding:0.75rem 1rem;background:var(--bg-card);border-radius:var(--radius-sm);border-left:4px solid var(--secondary);box-shadow:var(--shadow);">
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+                    <div>
+                        <strong>{{ r.nombre_reportador }}</strong>
+                        <span style="color:var(--text-secondary);font-size:0.85rem;">reportó</span>
+                        <a href="/centro/{{ r.centro_id }}" style="color:var(--secondary);font-weight:600;">centro #{{ r.centro_id }}</a>
+                        {% if r.nuevo_estado %}
+                        → <span class="badge-estado {{ 'badge-activo' if r.nuevo_estado == 'Activo' else 'badge-lleno' if r.nuevo_estado == 'Lleno' else 'badge-cerrado' if r.nuevo_estado == 'Cerrado' else 'badge-pausado' }}" style="position:static;font-size:0.7rem;">{{ r.nuevo_estado }}</span>
+                        {% endif %}
+                    </div>
+                    <span style="font-size:0.75rem;color:var(--text-secondary);">{{ r.fecha.strftime('%d/%m/%Y %H:%M') }}</span>
+                </div>
+                {% if r.mensaje %}
+                <p style="margin-top:0.3rem;font-size:0.9rem;color:var(--text-secondary);">{{ r.mensaje }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <p>🔐 Panel de Administración — Centros de Acopio Venezuela</p>
+    </footer>
+
+    <script>
+        async function eliminarCentro(id) {
+            if (!confirm("¿Estás seguro de eliminar este centro? Esta acción no se puede deshacer.")) return;
+            try {
+                const res = await fetch(`/api/centros/${id}`, { method: "DELETE" });
+                if (res.ok) {
+                    alert("✅ Centro eliminado");
+                    location.reload();
+                } else {
+                    alert("❌ Error al eliminar");
+                }
+            } catch (e) {
+                alert("❌ Error: " + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
