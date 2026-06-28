@@ -4,14 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Centros de Acopio Venezuela{% endblock %}</title>
-    <meta name="description" content="Directorio nacional de centros de acopio en Venezuela. Encuentra dónde llevar donaciones y ayuda humanitaria.">
+    <meta name="description" content="{% block meta_description %}Directorio nacional de centros de acopio en Venezuela. Encuentra dónde llevar donaciones y ayuda humanitaria.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}centros de acopio, Venezuela, donaciones, ayuda humanitaria, emergencia, centros de acopio Venezuela{% endblock %}">
     <meta name="theme-color" content="#0a0a1a">
 
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ site_url }}{{ request.url.path }}">
+
     <!-- Open Graph -->
-    <meta property="og:title" content="Centros de Acopio Venezuela">
-    <meta property="og:description" content="Directorio nacional de centros de acopio. Encuentra dónde llevar donaciones.">
+    {% block og_tags %}
+    <meta property="og:title" content="{% block og_title %}Centros de Acopio Venezuela{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Directorio nacional de centros de acopio en Venezuela. Encuentra dónde llevar donaciones y ayuda humanitaria.{% endblock %}">
+    <meta property="og:url" content="{{ site_url }}{{ request.url.path }}">
+    <meta property="og:image" content="{{ site_url }}/static/images/og-image.png">
+    <meta property="og:site_name" content="Centros de Acopio Venezuela">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_ES">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{% block twitter_title %}Centros de Acopio Venezuela{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Directorio nacional de centros de acopio en Venezuela. Encuentra dónde llevar donaciones y ayuda humanitaria.{% endblock %}">
+    <meta name="twitter:site" content="@rafnixg">
+    {% endblock %}
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -24,6 +39,8 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇻🇪</text></svg>">
 
     {% block head_extra %}{% endblock %}
+    <!-- Analytics -->
+    <script defer src="https://umami.rafnixg.dev/script.js" data-website-id="636e08ef-a302-4e57-9c89-f1d9264a38c0"></script>
 </head>
 <body>
     <!-- Navbar (mismo estilo landing-nav transparente) -->

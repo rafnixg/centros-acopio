@@ -138,6 +138,7 @@ def landing(request: Request, db: Session = Depends(get_db)):
             "activos": activos,
             "centros_recientes": centros_recientes,
             "estados": ESTADOS_VENEZUELA,
+            "site_url": SITE_URL,
         },
     )
 
@@ -150,7 +151,7 @@ def centros_directory(request: Request, db: Session = Depends(get_db)):
     paises = paises_bd if paises_bd else PAISES_PREDEFINIDOS
     return templates.TemplateResponse(
         "centros.html",
-        {"request": request, "paises": paises, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
+        {"request": request, "paises": paises, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES, "site_url": SITE_URL},
     )
 
 
@@ -160,7 +161,7 @@ def registrar(request: Request, db: Session = Depends(get_db)):
     paises = paises_bd if paises_bd else PAISES_PREDEFINIDOS
     return templates.TemplateResponse(
         "registro.html",
-        {"request": request, "paises": paises, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
+        {"request": request, "paises": paises, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES, "site_url": SITE_URL},
     )
 
 
@@ -178,14 +179,14 @@ def detalle_centro(request: Request, centro_id: int, db: Session = Depends(get_d
             "request": request,
             "centro": centro,
             "reportes": reportes,
-            "estados": ESTADOS_VENEZUELA,
+            "estados": ESTADOS_VENEZUELA, "site_url": SITE_URL
         },
     )
 
 
 @app.get("/admin/login", tags=["Admin"])
 def admin_login_page(request: Request):
-    return templates.TemplateResponse("admin_login.html", {"request": request})
+    return templates.TemplateResponse("admin_login.html", {"request": request, "site_url": SITE_URL})
 
 
 @app.get("/admin", tags=["Admin"])
@@ -198,7 +199,7 @@ def admin_panel(
     reportes = db.query(ReporteActualizacion).order_by(ReporteActualizacion.fecha.desc()).limit(20).all()
     return templates.TemplateResponse(
         "admin.html",
-        {"request": request, "centros": centros, "reportes": reportes, "estados": ESTADOS_VENEZUELA},
+        {"request": request, "centros": centros, "reportes": reportes, "estados": ESTADOS_VENEZUELA, "site_url": SITE_URL},
     )
 
 
@@ -214,7 +215,7 @@ def admin_editar(
         raise HTTPException(status_code=404, detail="Centro no encontrado")
     return templates.TemplateResponse(
         "admin_editar.html",
-        {"request": request, "centro": centro, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
+        {"request": request, "centro": centro, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES, "site_url": SITE_URL},
     )
 
 
@@ -222,23 +223,23 @@ def admin_editar(
 def stats_page(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         "estadisticas.html",
-        {"request": request, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
+        {"request": request, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES, "site_url": SITE_URL},
     )
 
 
 @app.get("/api/docs", tags=["Website"])
 def api_docs_page(request: Request):
-    return templates.TemplateResponse("api_docs.html", {"request": request})
+    return templates.TemplateResponse("api_docs.html", {"request": request, "site_url": SITE_URL})
 
 
 @app.get("/privacidad", tags=["Website"])
 def privacidad_page(request: Request):
-    return templates.TemplateResponse("privacidad.html", {"request": request})
+    return templates.TemplateResponse("privacidad.html", {"request": request, "site_url": SITE_URL})
 
 
 @app.get("/terminos", tags=["Website"])
 def terminos_page(request: Request):
-    return templates.TemplateResponse("terminos.html", {"request": request})
+    return templates.TemplateResponse("terminos.html", {"request": request, "site_url": SITE_URL})
 
 
 @app.post("/admin/login", tags=["Admin"])
@@ -249,7 +250,7 @@ def admin_login(password: str = Form(...)):
         return resp
     return templates.TemplateResponse(
         "admin_login.html",
-        {"request": {}, "error": "Contraseña incorrecta"},
+        {"request": {}, "error": "Contraseña incorrecta", "site_url": SITE_URL},
     )
 
 

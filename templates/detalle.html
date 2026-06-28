@@ -2,6 +2,22 @@
 
 {% block title %}{{ centro.nombre }} — Centros de Acopio Venezuela{% endblock %}
 
+{% block meta_keywords %}{{ centro.nombre }}, {{ centro.ciudad }}, {{ centro.estado }}{% if centro.pais != 'Venezuela' %}, {{ centro.pais }}{% endif %}, centro de acopio, donaciones Venezuela{% endblock %}
+
+{% block og_tags %}
+<meta property="og:title" content="{{ centro.nombre }} — Centros de Acopio Venezuela">
+<meta property="og:description" content="{{ centro.nombre }} en {{ centro.ciudad }}, {{ centro.estado }}{% if centro.pais and centro.pais != 'Venezuela' %}, {{ centro.pais }}{% endif %} · {{ centro.estado_centro }}">
+<meta property="og:url" content="{{ site_url }}/centro/{{ centro.id }}">
+<meta property="og:image" content="{{ site_url }}/static/images/og-image.png">
+<meta property="og:site_name" content="Centros de Acopio Venezuela">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ centro.nombre }} — Centros de Acopio Venezuela">
+<meta name="twitter:description" content="{{ centro.nombre }} en {{ centro.ciudad }}, {{ centro.estado }}{% if centro.pais and centro.pais != 'Venezuela' %}, {{ centro.pais }}{% endif %} · {{ centro.estado_centro }}">
+<meta name="twitter:site" content="@rafnixg">
+{% endblock %}
+
 {% block content %}
 <section class="container">
     <div style="margin-bottom:1rem;">
