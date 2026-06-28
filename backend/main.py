@@ -22,6 +22,16 @@ from sync import sync_job
 # Crear tablas
 Base.metadata.create_all(bind=engine)
 
+# Migraciones automáticas para tablas existentes
+from sqlalchemy import inspect as sa_inspect
+inspector = sa_inspect(engine)
+existing_columns = [c["name"] for c in inspector.get_columns("centros_acopio")]
+with engine.connect() as conn:
+    if "pais" not in existing_columns:
+        conn.exec_driver_sql("ALTER TABLE centros_acopio ADD COLUMN pais VARCHAR(50) NOT NULL DEFAULT 'Venezuela'")
+        conn.commit()
+        print("[migracion] Columna 'pais' agregada a centros_acopio")
+
 # Scheduler para sync cada hora
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 scheduler = AsyncIOScheduler()
