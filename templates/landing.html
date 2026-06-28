@@ -25,6 +25,7 @@
                 <a href="/centros">📦 Centros de acopio</a>
                 <a href="#voluntariado">🤝 Voluntariado</a>
                 <a href="#contacto">📞 Contacto</a>
+                <a href="/api/docs">🔌 API</a>
                 <a href="/registrar" class="nav-cta">➕ Registrar centro</a>
             </div>
             <button class="nav-toggle" id="navToggle" aria-label="Menú">☰</button>
@@ -77,11 +78,19 @@
                     </a>
                 </div>
                 <div class="donation-card">
-                    <div class="donation-org">Aid For Life International</div>
-                    <p class="donation-desc">Respuesta de emergencia ante el terremoto en Venezuela: ayuda humanitaria y suministros para las comunidades afectadas.</p>
+                    <div class="donation-org">Hazlo Hoy · Venezuela Ayuda</div>
+                    <p class="donation-desc">Plataforma comunitaria sin fines de lucro que coordina la respuesta a la emergencia: reportes de desaparecidos, edificios dañados, voluntarios y canales de donación verificados.</p>
                     <div class="donation-tag">Cuentas bancarias</div>
-                    <a href="https://aidforlifeintl.org/venezuela-earthquake-emergency-response-2026/" target="_blank" rel="noopener" class="btn-landing btn-primary-landing" style="font-size:0.9rem;padding:0.7rem 1.2rem;">
-                        🌐 Donar en Aid For Life
+                    <a href="https://terremoto.hazlohoy.org/" target="_blank" rel="noopener" class="btn-landing btn-primary-landing" style="font-size:0.9rem;padding:0.7rem 1.2rem;">
+                        🌐 Donar en Hazlo Hoy
+                    </a>
+                </div>
+                <div class="donation-card">
+                    <div class="donation-org">Cruz Roja Venezolana</div>
+                    <p class="donation-desc">La Sociedad Venezolana de la Cruz Roja se encuentra brindando asistencia humanitaria a las personas afectadas por el terremoto.</p>
+                    <div class="donation-tag">Cuentas bancarias</div>
+                    <a href="https://www.cruzrojavenezolana.org/" target="_blank" rel="noopener" class="btn-landing btn-primary-landing" style="font-size:0.9rem;padding:0.7rem 1.2rem;">
+                        🌐 Donar en Cruz Roja
                     </a>
                 </div>
             </div>
@@ -108,11 +117,11 @@
                         {% set prods = c.productos | from_json if c.productos else [] %}
                         {% if prods %}
                         <div class="featured-tags">
-                            {% for p in prods[:3] %}
+                            {% for p in prods[:4] %}
                             <span>{{ p }}</span>
                             {% endfor %}
-                            {% if prods|length > 3 %}
-                            <span>+{{ prods|length - 3 }}</span>
+                            {% if prods|length > 4 %}
+                            <span>+{{ prods|length - 4 }}</span>
                             {% endif %}
                         </div>
                         {% endif %}
@@ -158,6 +167,14 @@
                 </div>
                 <div class="volunteer-card">
                     <div class="volunteer-icon">📦</div>
+                    <h4>Ayuda en Camino</h4>
+                    <p>Centros y organizaciones en Venezuela que necesitan artículos específicos en este momento.</p>
+                    <a href="https://ayudaencamino.com/" class="btn-landing btn-secondary-landing" style="font-size:0.9rem;">
+                        📋 Ayudar
+                    </a>
+                </div>
+                <div class="volunteer-card">
+                    <div class="volunteer-icon">📦</div>
                     <h4>Centros de acopio</h4>
                     <p>Los centros de acopio necesitan personas que ayuden a clasificar, empacar y distribuir las donaciones.</p>
                     <a href="/centros" class="btn-landing btn-secondary-landing" style="font-size:0.9rem;">
@@ -188,10 +205,10 @@
                     <div class="emergency-icon">📞</div>
                     <h4>Teléfonos de emergencia</h4>
                     <div class="emergency-numbers">
-                        <a href="tel:911">🚑 911 · Emergencias</a>
-                        <a href="tel:02129932541">🚁 Aeroambulancias · (0212) 993.25.41</a>
-                        <a href="tel:02129936911">🆘 Rescarven · (0212) 993.69.11</a>
-                        <a href="tel:02125454545">🚑 Amb. Metropolitano · (0212) 545.45.45</a>
+                        <a href="tel:911"> 911 · Movistar</a>
+                        <a href="tel:171"> 171 · Teléfono Fijo CANTV</a>
+                        <a href="tel:112"> 112 · Digitel</a>
+                        <a href="tel:*1"> *1 · Movilnet</a>
                     </div>
                 </div>
                 <div class="emergency-card">
@@ -222,8 +239,8 @@
                 Comparte este sitio para llegar a más personas que necesitan ayuda.
             </p>
             <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-                <a href="https://wa.me/?text=🇻🇪%20Centros%20de%20Acopio%20Venezuela%20-%20Directorio%20nacional%20de%20centros%20de%20acopio%20para%20la%20emergencia.%20Encuentra%20dónde%20llevar%20donaciones%20en%20https://centosacopios.com" target="_blank" class="btn-landing btn-outline-landing">📱 Compartir en WhatsApp</a>
-                <a href="https://twitter.com/intent/tweet?text=🇻🇪%20Centros%20de%20Acopio%20Venezuela%20-%20Directorio%20nacional%20de%20centros%20de%20acopio%20para%20la%20emergencia.%20Encuentra%20dónde%20llevar%20donaciones%20https://centosacopios.com" target="_blank" class="btn-landing btn-outline-landing">𝕏 Compartir en Twitter</a>
+                <a href="https://wa.me/?text=🇻🇪%20Centros%20de%20Acopio%20Venezuela%20-%20Directorio%20nacional%20de%20centros%20de%20acopio%20para%20la%20emergencia.%20Encuentra%20dónde%20llevar%20donaciones%20en%20https://centrosacopio.rafnixg.dev" target="_blank" class="btn-landing btn-outline-landing">📱 Compartir en WhatsApp</a>
+                <a href="https://twitter.com/intent/tweet?text=🇻🇪%20Centros%20de%20Acopio%20Venezuela%20-%20Directorio%20nacional%20de%20centros%20de%20acopio%20para%20la%20emergencia.%20Encuentra%20dónde%20llevar%20donaciones%20https://centrosacopio.rafnixg.dev" target="_blank" class="btn-landing btn-outline-landing">𝕏 Compartir en Twitter</a>
             </div>
         </div>
     </section>
@@ -240,6 +257,9 @@
                 <a href="/centros">Directorio</a>
                 <a href="/registrar">Registrar centro</a>
                 <a href="/estadisticas">Estadísticas</a>
+                <a href="/api/docs">API</a>
+                <a href="/privacidad">Privacidad</a>
+                <a href="/terminos">Términos</a>
             </div>
             <div class="footer-credits">
                 <p>Inspirado en <a href="https://ayudavenezuela.venevision.com/" target="_blank">Venevisión</a> y <a href="https://desaparecidosterremotovenezuela.com/" target="_blank">Desaparecidos Terremoto Venezuela</a></p>

@@ -127,6 +127,8 @@ docker run -d -p 8000:8000 --name centros-acopios centros-acopios
 | `GET` | `/api/reportes/{id}` | Listar reportes de un centro |
 | `POST` | `/api/reportes` | Crear reporte ciudadano |
 
+> 📘 **Documentación interactiva de la API**: [`/docs`](https://centrosacopio.rafnixg.dev/docs) (Swagger UI)
+
 ---
 
 ## 🧪 Tests
@@ -176,6 +178,9 @@ Actualmente **23 tests** que cubren:
 | `/centro/{id}` | Vista detalle con reportes y compartir en redes |
 | `/estadisticas` | Dashboard con estadísticas y gráficos |
 | `/admin` | Panel administrativo protegido |
+| `/privacidad` | Política de privacidad |
+| `/terminos` | Términos y condiciones |
+| `/docs` | Documentación interactiva de la API (Swagger UI) |
 
 ---
 

@@ -36,6 +36,11 @@
             </div>
         </div>
 
+        <div style="margin-bottom:1.5rem;text-align:center;">
+            <button onclick="sincronizar()" class="btn btn-secondary">🔄 Sincronizar desde centrosdeacopiovzla.com</button>
+            <span id="sync-result" style="margin-left:0.75rem;font-size:0.85rem;color:var(--text-secondary);"></span>
+        </div>
+
         <!-- Tabla de centros -->
         <h2 style="margin-bottom:1rem;">📋 Centros Registrados</h2>
         <div style="overflow-x:auto;">
@@ -112,6 +117,22 @@
     </footer>
 
     <script>
+        async function sincronizar() {
+            const btn = document.querySelector('button');
+            const result = document.getElementById('sync-result');
+            btn.disabled = true;
+            result.textContent = '⏳ Sincronizando...';
+            try {
+                const res = await fetch('/admin/sync', { method: 'POST' });
+                const data = await res.json();
+                result.textContent = `✅ ${data.insertados} insertados, ${data.actualizados} actualizados`;
+                setTimeout(() => location.reload(), 1500);
+            } catch (e) {
+                result.textContent = '❌ Error: ' + e.message;
+            }
+            btn.disabled = false;
+        }
+
         async function eliminarCentro(id) {
             if (!confirm("¿Estás seguro de eliminar este centro? Esta acción no se puede deshacer.")) return;
             try {

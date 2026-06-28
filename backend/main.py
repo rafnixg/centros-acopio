@@ -1,6 +1,7 @@
 import json
 import os
 import httpx
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, Query, Request, Form, Cookie
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -12,11 +13,31 @@ from sqlalchemy import func
 from database import engine, get_db, Base
 from models import CentroAcopio, ReporteActualizacion
 from schemas import CentroAcopioCreate, CentroAcopioUpdate, CentroAcopioResponse
+from sync import sync_job
 
 # Crear tablas
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Centros de Acopio Venezuela", description="Directorio nacional de centros de acopio")
+# Scheduler para sync cada hora
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+scheduler = AsyncIOScheduler()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler.add_job(
+        sync_job, "interval", hours=1, id="sync_centros", replace_existing=True
+    )
+    scheduler.start()
+    yield
+    scheduler.shutdown()
+
+
+app = FastAPI(
+    title="Centros de Acopio Venezuela",
+    description="Directorio nacional de centros de acopio",
+    lifespan=lifespan,
+)
 
 # CORS
 app.add_middleware(
@@ -85,7 +106,7 @@ PRODUCTOS_DISPONIBLES = [
 # ---------------------------------------------------------------------------
 # RUTAS DE TEMPLATES (HTML)
 # ---------------------------------------------------------------------------
-@app.get("/")
+@app.get("/", tags=["Website"])
 def landing(request: Request, db: Session = Depends(get_db)):
     """Landing page informativa estilo ayudavenezuela.venevision.com"""
     total = db.query(func.count(CentroAcopio.id)).scalar()
@@ -108,7 +129,7 @@ def landing(request: Request, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/centros")
+@app.get("/centros", tags=["Website"])
 def centros_directory(request: Request):
     """Directorio completo de centros de acopio (antes index)"""
     return templates.TemplateResponse(
@@ -117,7 +138,7 @@ def centros_directory(request: Request):
     )
 
 
-@app.get("/registrar")
+@app.get("/registrar", tags=["Website"])
 def registrar(request: Request):
     return templates.TemplateResponse(
         "registro.html",
@@ -125,7 +146,7 @@ def registrar(request: Request):
     )
 
 
-@app.get("/centro/{centro_id}")
+@app.get("/centro/{centro_id}", tags=["Website"])
 def detalle_centro(request: Request, centro_id: int, db: Session = Depends(get_db)):
     centro = db.query(CentroAcopio).filter(CentroAcopio.id == centro_id).first()
     if not centro:
@@ -144,12 +165,12 @@ def detalle_centro(request: Request, centro_id: int, db: Session = Depends(get_d
     )
 
 
-@app.get("/admin/login")
+@app.get("/admin/login", tags=["Admin"])
 def admin_login_page(request: Request):
     return templates.TemplateResponse("admin_login.html", {"request": request})
 
 
-@app.get("/admin")
+@app.get("/admin", tags=["Admin"])
 def admin_panel(
     request: Request,
     db: Session = Depends(get_db),
@@ -163,7 +184,7 @@ def admin_panel(
     )
 
 
-@app.get("/admin/editar/{centro_id}")
+@app.get("/admin/editar/{centro_id}", tags=["Admin"])
 def admin_editar(
     request: Request,
     centro_id: int,
@@ -179,7 +200,7 @@ def admin_editar(
     )
 
 
-@app.get("/estadisticas")
+@app.get("/estadisticas", tags=["Website"])
 def stats_page(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         "estadisticas.html",
@@ -187,7 +208,22 @@ def stats_page(request: Request, db: Session = Depends(get_db)):
     )
 
 
-@app.post("/admin/login")
+@app.get("/api/docs", tags=["Website"])
+def api_docs_page(request: Request):
+    return templates.TemplateResponse("api_docs.html", {"request": request})
+
+
+@app.get("/privacidad", tags=["Website"])
+def privacidad_page(request: Request):
+    return templates.TemplateResponse("privacidad.html", {"request": request})
+
+
+@app.get("/terminos", tags=["Website"])
+def terminos_page(request: Request):
+    return templates.TemplateResponse("terminos.html", {"request": request})
+
+
+@app.post("/admin/login", tags=["Admin"])
 def admin_login(password: str = Form(...)):
     if password == ADMIN_TOKEN:
         resp = RedirectResponse(url="/admin", status_code=302)
@@ -199,17 +235,28 @@ def admin_login(password: str = Form(...)):
     )
 
 
-@app.post("/admin/logout")
+@app.post("/admin/logout", tags=["Admin"])
 def admin_logout():
     resp = RedirectResponse(url="/", status_code=302)
     resp.delete_cookie("token")
     return resp
 
 
+@app.post("/admin/sync", tags=["Admin"])
+def admin_sync(
+    db: Session = Depends(get_db),
+    _: bool = Depends(verify_admin),
+):
+    """Disparar sincronización manual desde el panel admin."""
+    from sync import sync_from_remote
+    result = sync_from_remote(db)
+    return result
+
+
 # ---------------------------------------------------------------------------
 # API REST
 # ---------------------------------------------------------------------------
-@app.get("/api/centros", response_model=list[CentroAcopioResponse])
+@app.get("/api/centros", response_model=list[CentroAcopioResponse], tags=["API"])
 def listar_centros(
     db: Session = Depends(get_db),
     q: str = Query("", description="Búsqueda por nombre, ciudad o dirección"),
@@ -244,7 +291,7 @@ def listar_centros(
     return centros
 
 
-@app.get("/api/centros/{centro_id}", response_model=CentroAcopioResponse)
+@app.get("/api/centros/{centro_id}", response_model=CentroAcopioResponse, tags=["API"])
 def obtener_centro(centro_id: int, db: Session = Depends(get_db)):
     centro = db.query(CentroAcopio).filter(CentroAcopio.id == centro_id).first()
     if not centro:
@@ -252,7 +299,7 @@ def obtener_centro(centro_id: int, db: Session = Depends(get_db)):
     return centro
 
 
-@app.post("/api/centros", response_model=CentroAcopioResponse, status_code=201)
+@app.post("/api/centros", response_model=CentroAcopioResponse, status_code=201, tags=["API"])
 def crear_centro(data: CentroAcopioCreate, db: Session = Depends(get_db)):
     centro = CentroAcopio(**data.model_dump())
     db.add(centro)
@@ -261,7 +308,7 @@ def crear_centro(data: CentroAcopioCreate, db: Session = Depends(get_db)):
     return centro
 
 
-@app.put("/api/centros/{centro_id}", response_model=CentroAcopioResponse)
+@app.put("/api/centros/{centro_id}", response_model=CentroAcopioResponse, tags=["API"])
 def actualizar_centro(
     centro_id: int,
     data: CentroAcopioUpdate,
@@ -281,7 +328,7 @@ def actualizar_centro(
     return centro
 
 
-@app.delete("/api/centros/{centro_id}", status_code=204)
+@app.delete("/api/centros/{centro_id}", status_code=204, tags=["API"])
 def eliminar_centro(
     centro_id: int,
     db: Session = Depends(get_db),
@@ -295,12 +342,12 @@ def eliminar_centro(
     return None
 
 
-@app.get("/api/estados")
+@app.get("/api/estados", response_model=list[str], tags=["API"])
 def listar_estados():
     return ESTADOS_VENEZUELA
 
 
-@app.get("/api/estadisticas")
+@app.get("/api/estadisticas", tags=["API"])
 def estadisticas(db: Session = Depends(get_db)):
     total = db.query(func.count(CentroAcopio.id)).scalar()
     por_estado = (
@@ -351,7 +398,7 @@ def estadisticas(db: Session = Depends(get_db)):
 # ---------------------------------------------------------------------------
 # GEOCODIFICACIÓN AUTOMÁTICA (Nominatim)
 # ---------------------------------------------------------------------------
-@app.post("/api/geocodificar")
+@app.post("/api/geocodificar", tags=["API"])
 async def geocodificar(data: dict):
     direccion = data.get("direccion", "")
     ciudad = data.get("ciudad", "")
@@ -379,7 +426,7 @@ async def geocodificar(data: dict):
 # ---------------------------------------------------------------------------
 # REPORTES DE ACTUALIZACIÓN (ciudadanos reportan cambios)
 # ---------------------------------------------------------------------------
-@app.get("/api/reportes/{centro_id}")
+@app.get("/api/reportes/{centro_id}", tags=["API"])
 def listar_reportes(centro_id: int, db: Session = Depends(get_db)):
     reportes = db.query(ReporteActualizacion).filter(
         ReporteActualizacion.centro_id == centro_id
@@ -396,7 +443,7 @@ def listar_reportes(centro_id: int, db: Session = Depends(get_db)):
     ]
 
 
-@app.post("/api/reportes")
+@app.post("/api/reportes", tags=["API"])
 def crear_reporte(data: dict, db: Session = Depends(get_db)):
     centro_id = data.get("centro_id")
     nombre = data.get("nombre_reportador", "Anónimo")

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}API Pública — Centros de Acopio Venezuela{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:800px;">
+    <div style="text-align:center;margin-bottom:2rem;">
+        <h1>🔌 API Pública — Datos Abiertos</h1>
+        <p style="color:var(--text-secondary);">Este proyecto es de código abierto y los datos son completamente públicos y reutilizables.</p>
+    </div>
+
+    <!-- Enlaces a Swagger UI y ReDoc -->
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;">
+        <a href="/docs" target="_blank" class="btn btn-primary" style="padding:1rem 2rem;font-size:1.1rem;">
+            📖 Swagger UI — Probar API
+        </a>
+        <a href="/redoc" target="_blank" class="btn btn-secondary" style="padding:1rem 2rem;font-size:1.1rem;">
+            📚 ReDoc — Documentación
+        </a>
+    </div>
+
+    <div class="form-card" style="max-width:none;">
+        <h2>📡 Endpoints Disponibles</h2>
+        <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Todos los endpoints devuelven JSON. No requieren autenticación a menos que se indique.</p>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+
+            <div style="padding:1rem;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--success);">
+                <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.3rem;">
+                    <span style="background:var(--success);color:white;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.7rem;font-weight:700;">GET</span>
+                    <code style="font-size:0.95rem;">/api/centros</code>
+                </div>
+                <p style="font-size:0.85rem;color:var(--text-secondary);">Listar todos los centros de acopio. Acepta filtros opcionales vía query string:</p>
+                <ul style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.3rem;padding-left:1.5rem;">
+                    <li><code>?q=</code> — Búsqueda por nombre, ciudad o dirección</li>
+                    <li><code>?estado=</code> — Filtrar por estado (ej: <code>Distrito Capital</code>)</li>
+                    <li><code>?producto=</code> — Filtrar por tipo de producto</li>
+                    <li><code>?estado_centro=</code> — Filtrar por Activo/Lleno/Pausado/Cerrado</li>
+                </ul>
+                <pre style="background:rgba(0,0,0,0.2);padding:0.5rem;border-radius:4px;font-size:0.75rem;margin-top:0.5rem;overflow-x:auto;">curl https://centrosacopio.rafnixg.dev/api/centros?estado=Carabobo</pre>
+            </div>
+
+            <div style="padding:1rem;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--success);">
+                <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.3rem;">
+                    <span style="background:var(--success);color:white;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.7rem;font-weight:700;">GET</span>
+                    <code style="font-size:0.95rem;">/api/centros/{id}</code>
+                </div>
+                <p style="font-size:0.85rem;color:var(--text-secondary);">Obtener detalle de un centro específico.</p>
+                <pre style="background:rgba(0,0,0,0.2);padding:0.5rem;border-radius:4px;font-size:0.75rem;margin-top:0.5rem;overflow-x:auto;">curl https://centrosacopio.rafnixg.dev/api/centros/1</pre>
+            </div>
+
+            <div style="padding:1rem;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--success);">
+                <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.3rem;">
+                    <span style="background:var(--warning);color:#1d1d1d;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.7rem;font-weight:700;">POST</span>
+                    <code style="font-size:0.95rem;">/api/centros</code>
+                </div>
+                <p style="font-size:0.85rem;color:var(--text-secondary);">Registrar un nuevo centro de acopio.</p>
+                <pre style="background:rgba(0,0,0,0.2);padding:0.5rem;border-radius:4px;font-size:0.75rem;margin-top:0.5rem;overflow-x:auto;">curl -X POST https://centrosacopio.rafnixg.dev/api/centros \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Mi Centro","estado":"Carabobo","ciudad":"Valencia","direccion":"Av. Principal","telefono":"0412-0000000","responsable":"Yo"}'</pre>
+            </div>
+
+            <div style="padding:1rem;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--success);">
+                <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.3rem;">
+                    <span style="background:var(--success);color:white;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.7rem;font-weight:700;">GET</span>
+                    <code style="font-size:0.95rem;">/api/estadisticas</code>
+                </div>
+                <p style="font-size:0.85rem;color:var(--text-secondary);">Obtener estadísticas: total de centros, por estado, por producto, centros recientes.</p>
+            </div>
+
+            <div style="padding:1rem;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--success);">
+                <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.3rem;">
+                    <span style="background:var(--success);color:white;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.7rem;font-weight:700;">GET</span>
+                    <code style="font-size:0.95rem;">/api/estados</code>
+                </div>
+                <p style="font-size:0.85rem;color:var(--text-secondary);">Lista de 24 estados de Venezuela.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-card" style="max-width:none;margin-top:1.5rem;">
+        <h2>📋 Licencia de Uso</h2>
+        <p style="color:var(--text-secondary);margin-bottom:0.75rem;">
+            Los datos expuestos a través de esta API son de carácter público y se ofrecen bajo los siguientes términos:
+        </p>
+        <ul style="color:var(--text-secondary);font-size:0.9rem;padding-left:1.5rem;display:flex;flex-direction:column;gap:0.4rem;">
+            <li>✅ Puedes usar, reproducir y distribuir los datos libremente</li>
+            <li>✅ Puedes construir aplicaciones, visualizaciones o análisis con estos datos</li>
+            <li>📌 Agradecemos pero no exigimos atribución</li>
+            <li>⚠️ Los datos se proveen "tal cual", sin garantías de exactitud o disponibilidad</li>
+            <li>🔄 Los datos se actualizan cada hora desde múltiples fuentes comunitarias</li>
+        </ul>
+    </div>
+
+    <div class="form-card" style="max-width:none;margin-top:1.5rem;">
+        <h2>🔄 Fuentes de Datos</h2>
+        <p style="color:var(--text-secondary);margin-bottom:0.75rem;">
+            Este directorio consolida información de:
+        </p>
+        <ul style="color:var(--text-secondary);font-size:0.9rem;padding-left:1.5rem;display:flex;flex-direction:column;gap:0.4rem;">
+            <li>📦 <a href="https://www.centrosdeacopiovzla.com/data.json" target="_blank" style="color:var(--secondary);">centrosdeacopiovzla.com</a> — sincronizado cada hora</li>
+            <li>🧑‍🤝‍🧑 <a href="https://centrosacopiovzla.org/" target="_blank" style="color:var(--secondary);">centrosacopiovzla.org</a></li>
+            <li>👥 <a href="https://acopios-refugios.vercel.app/" target="_blank" style="color:var(--secondary);">acopios-refugios.vercel.app</a></li>
+            <li>📝 <a href="/registrar">Registros ciudadanos</a> enviados directamente por los usuarios</li>
+        </ul>
+        <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;">
+            Código fuente: <a href="https://github.com/" target="_blank" style="color:var(--secondary);">GitHub</a>
+        </p>
+    </div>
+
+    <div style="text-align:center;margin-top:2rem;">
+        <a href="/" class="btn btn-primary">← Volver al inicio</a>
+    </div>
+</section>
+{% endblock %}
