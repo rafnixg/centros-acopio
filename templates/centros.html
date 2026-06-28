@@ -89,14 +89,9 @@
 {% block scripts_extra %}
 <script src="/static/js/map.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-        try {
-            const res = await fetch("/api/centros");
-            const centros = await res.json();
-            setTimeout(() => initMapa(centros), 200);
-        } catch (e) {
-            console.error("Error cargando mapa:", e);
-        }
+    document.addEventListener("DOMContentLoaded", () => {
+        // Inicializar mapa vacío — cargarCentros() lo poblará
+        if (typeof initMapa === "function") initMapa();
     });
 </script>
 {% endblock %}

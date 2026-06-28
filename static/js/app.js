@@ -180,6 +180,10 @@ async function cargarCentros() {
         const centros = await res.json();
         renderCentros(centros);
         cargarEstadisticas();
+
+        // Sincronizar mapa: inicia si es primera vez, actualiza marcadores siempre
+        if (typeof initMapa === "function") initMapa();
+        if (typeof cargarMarcadores === "function") cargarMarcadores(centros);
     } catch (e) {
         console.error(e);
         const grid = document.getElementById("grid-centros");
@@ -260,6 +264,22 @@ async function enviarRegistro(e) {
     } finally {
         btn.disabled = false;
         btn.innerHTML = "💾 Guardar Centro de Acopio";
+    }
+}
+
+// ---------- Gestión dinámica de Estado/Región según país ----------
+function gestionarCampoEstado(pais) {
+    const container = document.getElementById("estado-container");
+    if (!container) return;
+
+    if (pais === "Venezuela") {
+        container.innerHTML = `<select name="estado" id="estado" required>
+            <option value="">Selecciona un estado...</option>
+            ${(window.ESTADOS_VENEZUELA || []).map(e => `<option value="${e}">${e}</option>`).join("")}
+        </select>`;
+    } else {
+        container.innerHTML = `<input type="text" name="estado" id="estado" required
+            placeholder="Ej: Madrid, Antioquia, Texas...">`;
     }
 }
 
@@ -364,5 +384,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (formRegistro) {
         formRegistro.addEventListener("submit", enviarRegistro);
         initGeocoding();
+
+        // Campo Estado/Región dinámico según país
+        const paisSelect = document.getElementById("pais");
+        if (paisSelect) {
+            gestionarCampoEstado(paisSelect.value);
+            paisSelect.addEventListener("change", () => gestionarCampoEstado(paisSelect.value));
+        }
     }
 });

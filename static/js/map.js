@@ -19,12 +19,9 @@ function colorMarker(estado) {
     }
 }
 
-function initMapa(centros) {
-    // Si ya existe el mapa, solo recargamos marcadores
-    if (mapa) {
-        cargarMarcadores(centros);
-        return;
-    }
+function initMapa() {
+    // Si ya existe el mapa, no hacemos nada (solo recargar marcadores con cargarMarcadores)
+    if (mapa) return;
 
     mapa = L.map("mapa").setView(CENTRO_VENEZUELA, ZOOM_DEFAULT);
 
@@ -34,7 +31,6 @@ function initMapa(centros) {
     }).addTo(mapa);
 
     markersLayer = L.layerGroup().addTo(mapa);
-    cargarMarcadores(centros);
 }
 
 function cargarMarcadores(centros) {
