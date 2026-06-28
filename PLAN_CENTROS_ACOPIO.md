@@ -215,26 +215,38 @@ class CentroAcopio(Base):
 
 ## 9. Plan de Implementación (Fases)
 
-### Fase 1 — MVP (Core)
+### Fase 1 — MVP (Core) ✅
 - [x] Proyecto estructurado
-- [ ] Backend FastAPI con modelo CRUD + SQLite
-- [ ] Formulario de registro funcional
-- [ ] Grid de tarjetas con buscador y filtros
-- [ ] Diseño responsive mobile-first
-- [ ] Despliegue inicial
+- [x] Backend FastAPI con modelo CRUD + SQLite
+- [x] Formulario de registro funcional
+- [x] Grid de tarjetas con buscador y filtros
+- [x] Diseño responsive mobile-first
+- [x] Despliegue inicial
 
-### Fase 2 — Mejoras
-- [ ] Mapa Leaflet con geolocalización de centros
-- [ ] Vista detalle de cada centro
-- [ ] Compartir centro en WhatsApp / redes
-- [ ] Mejoras en UX/UI (animaciones, transiciones)
+### Fase 2 — Mejoras ✅
+- [x] Mapa Leaflet con geolocalización de centros
+- [x] Vista detalle de cada centro
+- [x] Compartir centro en WhatsApp / redes
+- [x] Mejoras en UX/UI (animaciones, transiciones)
 
-### Fase 3 — Escalabilidad
-- [ ] Panel admin con autenticación
-- [ ] Moderación de centros reportados
-- [ ] Reportes de centros llenos/cerrados
-- [ ] Estadísticas generales (dashboard público)
-- [ ] Migración a PostgreSQL (opcional)
+### Fase 3 — Escalabilidad ✅
+- [x] Panel admin con autenticación
+- [x] Moderación de centros reportados
+- [x] Reportes de centros llenos/cerrados
+- [x] Estadísticas generales (dashboard público)
+
+### Fase 4 — Landing + Consistencia ✅
+- [x] Landing informativa (hero, donaciones, voluntariado, emergencia)
+- [x] Navbar unificado (glass effect) en todo el sitio
+- [x] Tema oscuro consistente
+- [x] Responsive mejorado para móviles
+
+### Fase 5 — Infraestructura ✅
+- [x] Tests automatizados (23 tests, pytest)
+- [x] Dockerfile para contenedorización
+- [x] README.md con documentación completa
+- [x] .gitignore + .dockerignore
+- [x] Limpieza de archivos obsoletos
 
 ---
 

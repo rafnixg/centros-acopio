@@ -15,6 +15,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 .Python
+*.egg-info/
+dist/
+build/
 
 # --- Virtual environments ---
 .venv/
@@ -22,7 +25,17 @@ venv/
 env/
 ENV/
 
-# --- Packaging / build ---
+# --- Database (SQLite) ---
+*.db
+*.sqlite3
+
+# --- Tests / cache ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Docker ---
+.dockerignore
 build/
 dist/
 *.egg-info/
