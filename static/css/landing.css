@@ -309,11 +309,17 @@ body {
     padding: 1.75rem;
     box-shadow: var(--shadow);
     transition: transform var(--transition), box-shadow var(--transition);
+    display: flex;
+    flex-direction: column;
 }
 
 .donation-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.donation-card .btn-landing {
+    margin-top: auto;
 }
 
 .donation-org {
@@ -471,11 +477,17 @@ body {
     padding: 1.75rem;
     box-shadow: var(--shadow);
     transition: transform var(--transition), box-shadow var(--transition);
+    display: flex;
+    flex-direction: column;
 }
 
 .volunteer-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.volunteer-card .btn-landing {
+    margin-top: auto;
 }
 
 .volunteer-icon {
@@ -508,11 +520,17 @@ body {
     padding: 1.75rem;
     box-shadow: var(--shadow);
     transition: transform var(--transition), box-shadow var(--transition);
+    display: flex;
+    flex-direction: column;
 }
 
 .emergency-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.emergency-card .btn-landing {
+    margin-top: auto;
 }
 
 .emergency-icon {
@@ -607,6 +625,12 @@ body {
 .footer-credits a {
     color: var(--secondary);
     text-decoration: none;
+}
+
+.footer-data-source {
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
 }
 
 /* ---------- Scroll animations ---------- */

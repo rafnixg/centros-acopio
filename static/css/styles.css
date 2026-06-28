@@ -703,6 +703,12 @@ main {
     text-decoration: none;
 }
 
+.footer-data-source {
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
 /* ---------- Responsive navbar ---------- */
 @media (max-width: 768px) {
     .nav-links {

@@ -2,7 +2,7 @@
 
 **Directorio nacional de centros de acopio** — una plataforma ciudadana para centralizar la información de los centros de acopio activos en Venezuela durante la emergencia.
 
-Inspirado en [ayudavenezuela.venevision.com](https://ayudavenezuela.venevision.com/) y [desaparecidosterremotovenezuela.com](https://desaparecidosterremotovenezuela.com/).
+Hecho con ❤️ por [@rafnixg](https://links.rafnixg.dev) · [Código abierto en GitHub](https://github.com/rafnixg/centros-acopio)
 
 ---
 
