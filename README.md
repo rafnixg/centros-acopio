@@ -97,18 +97,30 @@ python run.py
 # http://localhost:8000
 ```
 
-### Con Docker
+### Con Docker (build local)
 
 ```bash
 # Construir imagen
 docker build -t centros-acopios .
 
-# Ejecutar contenedor
+# Ejecutar contenedor (la DB se borra al reiniciar)
 docker run -d -p 8000:8000 --name centros-acopios centros-acopios
+```
+
+### Con Docker Compose (recomendado — DB persistente)
+
+```bash
+# Iniciar con volumen persistente para la base de datos
+docker compose up -d
+
+# Opcional: cambiar el ADMIN_TOKEN
+ADMIN_TOKEN=miclave123 docker compose up -d
 
 # Abrir en el navegador
 # http://localhost:8000
 ```
+
+> 💾 Con `docker compose` la base de datos SQLite se guarda en un volumen Docker (`centros_acopio_data`) y **no se pierde al reiniciar el contenedor**.
 
 ---
 

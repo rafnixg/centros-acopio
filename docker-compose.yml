@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  app:
+    image: ghcr.io/rafnixg/centros-acopios:latest
+    build: .
+    container_name: centros-acopios
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-admin123}
+      - DATABASE_URL=sqlite:////data/centros_acopio.db
+    volumes:
+      - centros_acopio_data:/data
+
+volumes:
+  centros_acopio_data:

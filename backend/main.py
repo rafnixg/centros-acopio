@@ -1,8 +1,12 @@
 import json
 import os
+import sys
 import httpx
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, Query, Request, Form, Cookie
+
+# Asegurar que el directorio backend/ está en el path (necesario para Docker)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
