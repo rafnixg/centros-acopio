@@ -76,6 +76,9 @@ templates.env.filters["from_json"] = from_json_filter
 # ---------------------------------------------------------------------------
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "admin123")
 
+# URL base del sitio para tags OG y canonical
+SITE_URL = os.environ.get("SITE_URL", "https://centrosacopio.rafnixg.dev")
+
 
 def verify_admin(token: str = Cookie(None)):
     if token != ADMIN_TOKEN:
