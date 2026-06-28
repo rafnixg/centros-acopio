@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class CentroAcopioBase(BaseModel):
     nombre: str
+    pais: str = "Venezuela"
     estado: str
     ciudad: str
     direccion: str

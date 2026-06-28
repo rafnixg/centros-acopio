@@ -63,7 +63,7 @@ function cargarMarcadores(centros) {
             const marker = L.marker([c.latitud, c.longitud], { icon })
                 .bindPopup(`
                     <strong>${escapeHtml(c.nombre)}</strong><br>
-                    📍 ${escapeHtml(c.ciudad)}, ${escapeHtml(c.estado)}<br>
+                    📍 ${escapeHtml(c.ciudad)}, ${escapeHtml(c.estado)}${c.pais && c.pais !== 'Venezuela' ? `, ${escapeHtml(c.pais)}` : ''}<br>
                     📞 ${escapeHtml(c.telefono)}<br>
                     🕐 ${c.horarios || "No indicado"}<br>
                     <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;background:${

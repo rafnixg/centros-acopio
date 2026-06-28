@@ -41,18 +41,14 @@
             <span class="icon">🔍</span>
             <input type="text" id="filtro-q" placeholder="Buscar por nombre, ciudad o dirección..." autocomplete="off">
         </div>
-        <select id="filtro-estado">
-            <option value="">Todos los estados</option>
-            {% for e in estados %}
-            <option value="{{ e }}">{{ e }}</option>
+        <select id="filtro-pais">
+            <option value="">Todos los países</option>
+            {% for p in paises %}
+            <option value="{{ p }}">{{ p }}</option>
             {% endfor %}
         </select>
-        <select id="filtro-estado-centro">
+        <select id="filtro-estado">
             <option value="">Todos los estados</option>
-            <option value="Activo">🟢 Activos</option>
-            <option value="Lleno">🟡 Llenos</option>
-            <option value="Pausado">🔵 Pausados</option>
-            <option value="Cerrado">🔴 Cerrados</option>
         </select>
         <select id="filtro-producto">
             <option value="">Todos los productos</option>

@@ -19,23 +19,34 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label>Estado <span class="required">*</span></label>
-                <select name="estado" required>
+                <label>País <span class="required">*</span></label>
+                <select name="pais" id="pais" required>
+                    <option value="">Selecciona un país...</option>
+                    {% for p in paises %}
+                    <option value="{{ p }}" {% if p == 'Venezuela' %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Estado / Región <span class="required">*</span></label>
+                <select name="estado" id="estado" required>
                     <option value="">Selecciona un estado...</option>
                     {% for e in estados %}
                     <option value="{{ e }}">{{ e }}</option>
                     {% endfor %}
                 </select>
             </div>
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
                 <label>Ciudad / Municipio <span class="required">*</span></label>
                 <input type="text" name="ciudad" required placeholder="Ej: Caracas, Libertador">
             </div>
-        </div>
-
-        <div class="form-group">
-            <label>Dirección exacta <span class="required">*</span></label>
-            <textarea name="direccion" required placeholder="Ej: Av. Principal de Los Cortijos, Edificio Maploca, piso 2. Cerca del centro comercial."></textarea>
+            <div class="form-group">
+                <label>Dirección exacta <span class="required">*</span></label>
+                <textarea name="direccion" required placeholder="Ej: Av. Principal de Los Cortijos, Edificio Maploca, piso 2. Cerca del centro comercial."></textarea>
+            </div>
         </div>
 
         <div class="form-row">

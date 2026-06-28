@@ -8,6 +8,7 @@ class CentroAcopio(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     nombre = Column(String(200), nullable=False, index=True)
+    pais = Column(String(50), nullable=False, index=True, default="Venezuela")
     estado = Column(String(50), nullable=False, index=True)
     ciudad = Column(String(100), nullable=False)
     direccion = Column(Text, nullable=False)

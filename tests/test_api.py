@@ -55,6 +55,7 @@ def clean_db():
 def sample_centro():
     return {
         "nombre": "Centro Test",
+        "pais": "Venezuela",
         "estado": "Distrito Capital",
         "ciudad": "Caracas",
         "direccion": "Av. Test, Edificio Test",

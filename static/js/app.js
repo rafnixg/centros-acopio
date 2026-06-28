@@ -59,11 +59,13 @@ function mostrarSkeleton() {
 function syncFiltersToURL() {
     const params = new URLSearchParams();
     const q = document.getElementById("filtro-q")?.value?.trim();
+    const pais = document.getElementById("filtro-pais")?.value;
     const estado = document.getElementById("filtro-estado")?.value;
     const producto = document.getElementById("filtro-producto")?.value;
     const estadoCentro = document.getElementById("filtro-estado-centro")?.value;
 
     if (q) params.set("q", q);
+    if (pais) params.set("pais", pais);
     if (estado) params.set("estado", estado);
     if (producto) params.set("producto", producto);
     if (estadoCentro) params.set("estado_centro", estadoCentro);
@@ -77,14 +79,49 @@ function syncFiltersToURL() {
 function syncFiltersFromURL() {
     const params = new URLSearchParams(window.location.search);
     const qEl = document.getElementById("filtro-q");
+    const paisEl = document.getElementById("filtro-pais");
     const estadoEl = document.getElementById("filtro-estado");
     const productoEl = document.getElementById("filtro-producto");
     const estadoCentroEl = document.getElementById("filtro-estado-centro");
 
     if (qEl && params.has("q")) qEl.value = params.get("q");
+    if (paisEl && params.has("pais")) paisEl.value = params.get("pais");
     if (estadoEl && params.has("estado")) estadoEl.value = params.get("estado");
     if (productoEl && params.has("producto")) productoEl.value = params.get("producto");
     if (estadoCentroEl && params.has("estado_centro")) estadoCentroEl.value = params.get("estado_centro");
+}
+
+// ---------- Cargar estados por país ----------
+async function cargarEstadosPorPais(pais) {
+    const estadoSelect = document.getElementById("filtro-estado");
+    if (!estadoSelect) return;
+
+    // Si no hay país seleccionado o es Venezuela, usar estados predefinidos
+    if (!pais || pais === "Venezuela") {
+        try {
+            const res = await fetch("/api/estados");
+            const estados = await res.json();
+            estadoSelect.innerHTML = `<option value="">Todos los estados</option>`
+                + estados.map(e => `<option value="${e}">${e}</option>`).join("");
+        } catch {
+            estadoSelect.innerHTML = `<option value="">Todos los estados</option>`;
+        }
+        return;
+    }
+
+    // Para otros países, mostrar estados disponibles desde la BD
+    try {
+        const res = await fetch(`/api/centros?pais=${encodeURIComponent(pais)}&limit=1`);
+        const centros = await res.json();
+        // Obtener estados únicos de los centros de ese país
+        const estadosRes = await fetch(`/api/centros?pais=${encodeURIComponent(pais)}`);
+        const todos = await estadosRes.json();
+        const estadosUnicos = [...new Set(todos.map(c => c.estado))].sort();
+        estadoSelect.innerHTML = `<option value="">Todos los estados / regiones</option>`
+            + estadosUnicos.map(e => `<option value="${e}">${e}</option>`).join("");
+    } catch {
+        estadoSelect.innerHTML = `<option value="">Todos los estados / regiones</option>`;
+    }
 }
 
 // ---------- Renderizar tarjetas ----------
@@ -110,7 +147,7 @@ function renderCentros(centros) {
                 ${emojiEstado(c.estado_centro)} ${c.estado_centro}
             </span>
             <h3>${escapeHtml(c.nombre)}</h3>
-            <div class="meta">📍 ${escapeHtml(c.ciudad)}, ${escapeHtml(c.estado)}</div>
+            <div class="meta">📍 ${escapeHtml(c.ciudad)}, ${escapeHtml(c.estado)}${c.pais && c.pais !== 'Venezuela' ? `, <strong>${escapeHtml(c.pais)}</strong>` : ''}</div>
             <div class="meta">📞 ${escapeHtml(c.telefono)}</div>
             ${c.horarios ? `<div class="horario">🕐 ${escapeHtml(c.horarios)}</div>` : ""}
             ${tags ? `<div class="productos-tags">${tags}${extras}</div>` : ""}
@@ -124,11 +161,13 @@ async function cargarCentros() {
 
     const params = new URLSearchParams();
     const q = document.getElementById("filtro-q")?.value?.trim();
+    const pais = document.getElementById("filtro-pais")?.value;
     const estado = document.getElementById("filtro-estado")?.value;
     const producto = document.getElementById("filtro-producto")?.value;
     const estadoCentro = document.getElementById("filtro-estado-centro")?.value;
 
     if (q) params.set("q", q);
+    if (pais) params.set("pais", pais);
     if (estado) params.set("estado", estado);
     if (producto) params.set("producto", producto);
     if (estadoCentro) params.set("estado_centro", estadoCentro);
@@ -182,6 +221,7 @@ async function enviarRegistro(e) {
 
     const data = {
         nombre: form.nombre.value.trim(),
+        pais: form.pais?.value || "Venezuela",
         estado: form.estado.value,
         ciudad: form.ciudad.value.trim(),
         direccion: form.direccion.value.trim(),
@@ -286,7 +326,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // Página principal
     const grid = document.getElementById("grid-centros");
     if (grid) {
+        // Cargar estados cuando cambia el país
+        const filtroPais = document.getElementById("filtro-pais");
+        if (filtroPais) {
+            filtroPais.addEventListener("change", () => {
+                cargarEstadosPorPais(filtroPais.value);
+                cargarCentros();
+            });
+        }
+
         syncFiltersFromURL();
+
+        // Cargar estados según el país inicial de la URL
+        if (filtroPais) {
+            cargarEstadosPorPais(filtroPais.value);
+        }
+
         cargarCentros();
 
         // Filtros con debounce

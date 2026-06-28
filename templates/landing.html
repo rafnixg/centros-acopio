@@ -113,7 +113,7 @@
                             {{ c.estado_centro }}
                         </span>
                         <h4>{{ c.nombre }}</h4>
-                        <p class="featured-meta">📍 {{ c.ciudad }}, {{ c.estado }}</p>
+                        <p class="featured-meta">📍 {{ c.ciudad }}, {{ c.estado }}{% if c.pais and c.pais != 'Venezuela' %}, <strong>{{ c.pais }}</strong>{% endif %}</p>
                         {% set prods = c.productos | from_json if c.productos else [] %}
                         {% if prods %}
                         <div class="featured-tags">

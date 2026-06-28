@@ -84,8 +84,14 @@ def verify_admin(token: str = Cookie(None)):
 
 
 # ---------------------------------------------------------------------------
-# ESTADOS DE VENEZUELA
+# PAÍSES Y ESTADOS
 # ---------------------------------------------------------------------------
+PAISES_PREDEFINIDOS = [
+    "Venezuela", "Argentina", "Brasil", "Chile", "Colombia", "Ecuador",
+    "España", "Estados Unidos", "Francia", "Guatemala", "Italia", "México",
+    "Panamá", "Paraguay", "Perú", "Portugal", "República Dominicana", "Uruguay",
+]
+
 ESTADOS_VENEZUELA = [
     "Amazonas", "Anzoátegui", "Apure", "Aragua", "Barinas", "Bolívar",
     "Carabobo", "Cojedes", "Delta Amacuro", "Distrito Capital", "Falcón",
@@ -134,19 +140,24 @@ def landing(request: Request, db: Session = Depends(get_db)):
 
 
 @app.get("/centros", tags=["Website"])
-def centros_directory(request: Request):
+def centros_directory(request: Request, db: Session = Depends(get_db)):
     """Directorio completo de centros de acopio (antes index)"""
+    # Obtener países que realmente existen en la BD
+    paises_bd = [r[0] for r in db.query(CentroAcopio.pais).distinct().order_by(CentroAcopio.pais).all()]
+    paises = paises_bd if paises_bd else PAISES_PREDEFINIDOS
     return templates.TemplateResponse(
         "centros.html",
-        {"request": request, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
+        {"request": request, "paises": paises, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
     )
 
 
 @app.get("/registrar", tags=["Website"])
-def registrar(request: Request):
+def registrar(request: Request, db: Session = Depends(get_db)):
+    paises_bd = [r[0] for r in db.query(CentroAcopio.pais).distinct().order_by(CentroAcopio.pais).all()]
+    paises = paises_bd if paises_bd else PAISES_PREDEFINIDOS
     return templates.TemplateResponse(
         "registro.html",
-        {"request": request, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
+        {"request": request, "paises": paises, "estados": ESTADOS_VENEZUELA, "productos": PRODUCTOS_DISPONIBLES},
     )
 
 
@@ -264,6 +275,7 @@ def admin_sync(
 def listar_centros(
     db: Session = Depends(get_db),
     q: str = Query("", description="Búsqueda por nombre, ciudad o dirección"),
+    pais: str = Query("", description="Filtrar por país"),
     estado: str = Query("", description="Filtrar por estado"),
     producto: str = Query("", description="Filtrar por tipo de producto"),
     estado_centro: str = Query("", description="Filtrar por estado del centro (Activo/Pausado/Lleno/Cerrado)"),
@@ -278,6 +290,9 @@ def listar_centros(
             | CentroAcopio.ciudad.ilike(like)
             | CentroAcopio.direccion.ilike(like)
         )
+
+    if pais:
+        query = query.filter(CentroAcopio.pais == pais)
 
     if estado:
         query = query.filter(CentroAcopio.estado == estado)
@@ -351,9 +366,21 @@ def listar_estados():
     return ESTADOS_VENEZUELA
 
 
+@app.get("/api/paises", response_model=list[str], tags=["API"])
+def listar_paises(db: Session = Depends(get_db)):
+    """Lista de países con centros registrados."""
+    paises = [r[0] for r in db.query(CentroAcopio.pais).distinct().order_by(CentroAcopio.pais).all()]
+    return paises if paises else PAISES_PREDEFINIDOS
+
+
 @app.get("/api/estadisticas", tags=["API"])
 def estadisticas(db: Session = Depends(get_db)):
     total = db.query(func.count(CentroAcopio.id)).scalar()
+    por_pais = (
+        db.query(CentroAcopio.pais, func.count(CentroAcopio.id))
+        .group_by(CentroAcopio.pais)
+        .all()
+    )
     por_estado = (
         db.query(CentroAcopio.estado, func.count(CentroAcopio.id))
         .group_by(CentroAcopio.estado)
@@ -388,11 +415,12 @@ def estadisticas(db: Session = Depends(get_db)):
 
     return {
         "total": total,
+        "por_pais": {p: c for p, c in por_pais},
         "por_estado": {e: c for e, c in por_estado},
         "por_estado_centro": {e: c for e, c in por_estado_centro},
         "por_producto": dict(sorted(productos_count.items(), key=lambda x: -x[1])),
         "recientes": [
-            {"id": c.id, "nombre": c.nombre, "ciudad": c.ciudad, "estado": c.estado}
+            {"id": c.id, "nombre": c.nombre, "ciudad": c.ciudad, "estado": c.estado, "pais": c.pais}
             for c in centros_recientes
         ],
         "total_reportes": total_reportes,
@@ -407,8 +435,9 @@ async def geocodificar(data: dict):
     direccion = data.get("direccion", "")
     ciudad = data.get("ciudad", "")
     estado = data.get("estado", "")
+    pais = data.get("pais", "Venezuela")
 
-    query = f"{direccion}, {ciudad}, {estado}, Venezuela"
+    query = f"{direccion}, {ciudad}, {estado}, {pais}"
 
     async with httpx.AsyncClient() as client:
         try:

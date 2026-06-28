@@ -19,6 +19,15 @@ logger = logging.getLogger(__name__)
 DATA_URL = "https://www.centrosdeacopiovzla.com/data.json"
 SOURCE_NAME = "centrosdeacopiovzla.com"
 
+# Estados venezolanos para inferir pais
+ESTADOS_VENEZUELA = [
+    "Amazonas", "Anzoátegui", "Apure", "Aragua", "Barinas", "Bolívar",
+    "Carabobo", "Cojedes", "Delta Amacuro", "Distrito Capital", "Falcón",
+    "Guárico", "Lara", "La Guaira", "Mérida", "Miranda", "Monagas",
+    "Nueva Esparta", "Portuguesa", "Sucre", "Táchira", "Trujillo",
+    "Yaracuy", "Zulia"
+]
+
 # Mapeo de productos del JSON a nuestros productos
 PRODUCT_MAP = {
     "agua potable": "Agua potable / embotellada",
@@ -91,6 +100,7 @@ def extract_centros_from_json(data: dict) -> list[dict]:
 
                 centros.append({
                     "nombre": c.get("nombre", "").strip(),
+                    "pais": "Venezuela" if estado_nombre in ESTADOS_VENEZUELA else estado_nombre,
                     "estado": estado_nombre,
                     "ciudad": ciudad_nombre,
                     "direccion": c.get("direccion", "").strip(),
