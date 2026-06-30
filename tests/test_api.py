@@ -2,7 +2,6 @@
 import json
 import os
 import sys
-import tempfile
 
 # Agregar backend al path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
@@ -19,6 +18,12 @@ from main import app
 # Base de datos temporal para tests
 # -------------------------------------------------------------------
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+
+# Asegurar esquema limpio en cada corrida de tests.
+try:
+    os.unlink("./test.db")
+except OSError:
+    pass
 
 engine_test = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
